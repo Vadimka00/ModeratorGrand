@@ -9068,13 +9068,16 @@ def update_chat_data(chat_id, chat_name, user_id, user_username):
 
         # Проверяем, изменился ли username пользователя
         cursor.execute("SELECT user_username FROM users WHERE user_id=?", (user_id,))
-        old_user_username = cursor.fetchone()[0]
+        result = cursor.fetchone()
+        if result is not None:
+            old_user_username = result[0]
+            if old_user_username != user_username:
+                # Обновляем username пользователя в таблице users
+                cursor.execute("UPDATE users SET user_username=? WHERE user_id=?", (user_username, user_id))
+                connection.commit()
+        else:
+            print("Пользователь с ID", user_id, "не найден в базе данных.")
 
-        if old_user_username != user_username:
-            # Обновляем username пользователя в таблице users
-            cursor.execute("UPDATE users SET user_username=? WHERE user_id=?", (user_username, user_id))
-
-        connection.commit()
 
     except Exception as e:
         error_message = (
