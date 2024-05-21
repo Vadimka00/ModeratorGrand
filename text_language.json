@@ -1,0 +1,550 @@
+{
+    "help_commands": {
+        "rus": {
+            "help_text": "🤖 <b>Список команд:</b>\n\n",
+            "stats_commands": "📊 /stats - Просмотр статистики пользователя в группе\n",
+            "groupstats_commands": "📈 /groupstats - Просмотр статистики группы\n",
+            "mute_commands": "🔇 /mute - Ограничить пользователю писать сообщения\n",
+            "unmute_commands": "🔊 /unmute - Снять ограничения с пользователя\n",
+            "kick_commands": "🚷 /kick - Исключить пользователя из группы\n",
+            "promote_commands": "👑 /promote - Повысить статус пользователя до администратора\n",
+            "demote_commands": "👎 /demote - Понизить статус пользователя\n",
+            "setrules_commands": "📜 /setrules - Установить правила группы\n",
+            "rules_commands": "📋 /rules - Показать правила группы\n",
+            "editrules_commands": "📝 /editrules - Изменить правила группы\n",
+            "warn_commands": "⚠️ /warn - Предупредить пользователя о нарушении правил чата\n",
+            "unwarn_commands": "⚠️ /unwarn - Снять предупреждение с пользователя\n",
+            "top_commands": "🔝 /top - Показать статистику топ активных участников чата (до 30)\n",
+            "help_commands": "❓ /help - Показать список команд\n"
+        },
+        "en": {
+            "help_text": "🤖 <b>List of commands:</b>\n\n",
+            "stats_commands": "📊 /stats - View user statistics in the group\n",
+            "groupstats_commands": "📈 /groupstats - View group statistics\n",
+            "mute_commands": "🔇 /mute - Restrict a user from sending messages\n",
+            "unmute_commands": "🔊 /unmute - Remove message restrictions from a user\n",
+            "kick_commands": "🚷 /kick - Kick a user from the group\n",
+            "promote_commands": "👑 /promote - Promote a user to administrator\n",
+            "demote_commands": "👎 /demote - Demote an administrator\n",
+            "setrules_commands": "📜 /setrules - Set group rules\n",
+            "rules_commands": "📋 /rules - Show group rules\n",
+            "editrules_commands": "📝 /editrules - Edit group rules\n",
+            "warn_commands": "⚠️ /warn - Warn a user for violating chat rules\n",
+            "unwarn_commands": "⚠️ /unwarn - Remove a warning from a user\n",
+            "top_commands": "🔝 /top - Show statistics for the top active members in the chat (up to 30)\n",
+            "help_commands": "❓ /help - Show list of commands\n"
+        }
+      },
+      "grand_bonus": {
+        "rus": {
+            "1": "GRAND бонус 💠 – получай игровые монеты 💰 за активность в группах!\n\n",
+            "2": "Установив GRAND MODERATOR в своей группе 💬, ты сможешь получать дополнительные вознаграждения бонусом Grand 💠 за активность участников. 🚀\n\n",
+            "3": "Разработчик планирует запуск Grand Wallet 👛, и после его запуска каждый пользователь сможет конвертировать заработанные бонусы в кошелёк. Grand Wallet откроет дополнительные возможности для заработка и его использования. 💰 Бонус Grand является инструментом оценки человеческого ресурса. 📊\n\n",
+            "4": "Подробнее читай в книге 📚 основателя фонда и автора книги GRAND TIME, Артура Гранди.\n\n",
+            "5": "Начни увлекательное путешествие 🌍 к новым возможностям с GRAND бонусом! 🌟🚀"
+        },
+        "en": {
+            "1": "GRAND bonus 💠 – earn game coins 💰 for activity in groups!\n\n",
+            "2": "By installing GRAND MODERATOR in your group 💬, you can receive additional Grand bonus rewards 💠 for member activity. 🚀\n\n",
+            "3": "The developer plans to launch the Grand Wallet 👛, and after its launch, every user will be able to convert earned bonuses into the wallet. Grand Wallet will open up additional opportunities for earning and using it. 💰 The Grand bonus is a tool for evaluating human resources. 📊\n\n",
+            "4": "Read more in the book 📚 by the founder of the fund and author of the book GRAND TIME, Artur Grandi.\n\n",
+            "5": "Start an exciting journey 🌍 to new opportunities with the GRAND bonus! 🌟🚀"
+        }
+      },
+      "start_text": {
+        "rus": {
+            "1": "🌟 Добро пожаловать в Grand Moderator! 🌟\n\n",
+            "2": "🛡️ Твой верный защитник от флуда и спама в чате! 🛡️\n\n",
+            "3": "🚫 Забудь о бесконечных потоках сообщений и нежелательном контенте. Grand Moderator поддержит порядок и чистоту в твоём чате!\n\n",
+            "4": "💼 Особенности Grand Moderator:\n",
+            "5": "- 🔍 Автоматическое распознавание и удаление мата и спама.\n",
+            "6": "- 💰 Раздача grand бонусов за активность в чате. Покажите себя — заработайте больше!\n",
+            "7": "- ⚙️ Лёгкая настройка под твой стиль общения.\n\n",
+            "8": "👮‍♂️ Присоединяйтесь к нам и сделай свой чат безопасным и приятным местом для общения!\n\n",
+            "9": "😊 Для начала работы добавь Grand Moderator's в свой чат.\n\n",
+            "10": "🚀 Давайте вместе сделаем твой чат еще лучше!"
+        },
+        "en": {
+            "1": "🌟 Welcome to Grand Moderator! 🌟\n\n",
+            "2": "🛡️ Your faithful defender against chat floods and spam! 🛡️\n\n",
+            "3": "🚫 Forget about endless streams of messages and unwanted content. Grand Moderator will maintain order and cleanliness in your chat!\n\n",
+            "4": "💼 Grand Moderator Features:\n",
+            "5": "- 🔍 Automatic detection and removal of profanity and spam.\n",
+            "6": "- 💰 Distribution of grand bonuses for chat activity. Show yourself - earn more!\n",
+            "7": "- ⚙️ Easy customization to fit your communication style.\n\n",
+            "8": "👮‍♂️ Join us and make your chat a safe and enjoyable place for conversation!\n\n",
+            "9": "😊 To get started, add Grand Moderator to your chat.\n\n",
+            "10": "🚀 Let's work together to make your chat even better!"
+        }
+      },
+      "prefix_text": {
+        "rus": {
+            "1": "Ты уже в числе участников нашего сообщества Grand Time? 🌟"
+        },
+        "en": {
+            "1": "Are you already a member of our Grand Time community? 🌟"
+        }
+      },
+      "language_text": {
+        "1": "Выбери язык, на котором мы будем общаться! 🌍✨",
+        "2": "Pick the language we will communicate in! 🌍✨",
+        "rus": "Ваш язык был изменён на 🇷🇺 русский",
+        "en": "Your language has been changed to 🇺🇸 English"
+    },
+    "reward_text": {
+        "rus": {
+            "1": "Присоединяйся к нам и открой поток 💰 Grand Бонусов от 1 до 10% за каждого активного пользователя в твоей группе!\n\n",
+            "2": "🚀 Активные пользователи - это те, кто не просто вступает в нашу группу, а активно общается и участвует в дискуссиях, с момента, когда добавлен Grand Moderator!\n\n",
+            "3": "Выбери в какой группе ты хочешь подробно узнать о реферальных начислениях и уровнях! 🌟"
+        },
+        "en": {
+            "1": "Join us and open a stream of 💰 Grand Bonuses from 1 to 10% for each active user in your group!\n\n",
+            "2": "🚀 Active users are those who not just join our group, but actively communicate and participate in discussions, since the moment when Grand Moderator was added!\n\n",
+            "3": "Pick which group you want to be in to learn about referral accruals and levels in detail! 🌟"
+        }
+      },
+      "settings_text": {
+        "rus": {
+            "select": "Пора выбрать группу для настройки. Какая это будет? 🤔",
+            "add": "Управляй группой как профи! Добавь меня ➕, и я открою тебе секретные функции, помогу настроить все параметры ⚙️ от языка до бонусов!",
+            "1": "🌎 Язык чата:",
+            "2": "💠 Заработок Grand бонус:",
+            "3": "👋 Приветствие для новыйх участников:",
+            "4": "☕ Профессиональное общение:",
+            "5": "🤬 Нецензурная лексика:",
+            "6": "📧 Спам, реклама:",
+            "7": "💬 Флуд:",
+            "8": "🔗 Ссылки на внешний ресурс:",
+            "9": "🔍 Ключевые слова:",
+            "10": "👮‍♀️ Предупреждения:",
+            "hi_text_swich": "👋 Редактировать",
+            "hi_text_wait": "Пожалуйста, напиши новое приветствие для твоей группы и отправь его мне.👇",
+            "hi_text_succses": "✅ Новый текст приветствия успешно установлен.",
+            "language_switch": {
+                "to": "🌎 Изменить 🇺🇸",
+                "succses": "✅ Язык успешно изменён!"
+            },
+            "earn_swich": {
+                "on": "💰 Отключить ❌",
+                "off": "💰 Включить ✅",
+                "succses": "✅ Для чата доступны начисления бонуса GRAND!",
+                "failure": "❌ Участники не могут зарабатывать бонус GRAND!"
+            },
+            "good_swich": {
+                "on": "☕ Запретить ❌",
+                "off": "☕ Разрешить ✅",
+                "succses": "✅ Участникам разрешено писать сообщения без смыслового содержания!",
+                "failure": "❌ Участникам запрещено писать сообщения без смыслового содержания!"
+            },
+            "fuck_swich": {
+                "on": "🤬 Разрешить ✅",
+                "off": "🤬 Запретить ❌",
+                "succses": "❌ Запрещена в чате",
+                "failure": "✅ Разрешена в чате"
+            },
+            "spam_swich": {
+                "on": "📧 Разрешить ✅",
+                "off": "📧 Запретить ❌",
+                "succses": "❌ Запрещена в чате",
+                "failure": "✅ Разрешена в чате"
+            },
+            "flood_swich": {
+                "on": "💬 Разрешить ✅",
+                "off": "💬 Запретить ❌",
+                "succses": "❌ Запрещен в чате",
+                "failure": "✅ Разрешен в чате"
+            },
+            "link_swich": {
+                "on": "🔗 Разрешить ✅",
+                "off": "🔗 Запретить ❌",
+                "succses": "❌ Запрещен в чате",
+                "failure": "✅ Разрешен в чате"
+            },
+            "key_swich": {
+                "add": "🔍 Добавить",
+                "del": "🚫 Удалить 🔍",
+                "wait": "Пожалуйста, напиши слова, которые ты хочешь запретить в группе по примеру ниже и отправь их мне.👇",
+                "еxample": "один, два, три, четыре, пять",
+                "warning": "Чтобы добавить ещё слова рекомендуется скопировать старые и к ним написать новые ‼️",
+                "succses": "✅ Ключевые слова успешно добавлены.",
+                "failure": "✅ Ключевые слова успешно удалены.",
+                "no": "❌ Ты не добавил слова которые запрещены в чате!"
+            },
+            "warn_text": {
+                "edit": "👮‍♀️ Настроить",                
+                "1": "-Нецензурная лексика:",
+                "2": "-Спам, реклама:",
+                "3": "-Флуд:",
+                "4": "❌ - уберет наказание за предупреждение!",
+                "5": "🚫 Ban - удалит пользователя из группы после предупреждения!",
+                "1h": "1 ч",
+                "2h": "2 ч",
+                "3h": "3 ч",
+                "4h": "4 ч",
+                "5h": "5 ч",
+                "6h": "6 ч",
+                "7h": "7 ч",
+                "8h": "8 ч",
+                "9h": "9 ч",
+                "10h": "10 ч",
+                "11h": "11 ч",
+                "12h": "12 ч",
+                "13h": "13 ч",
+                "14h": "14 ч",
+                "15h": "15 ч",
+                "16h": "16 ч",
+                "17h": "17 ч",
+                "18h": "18 ч",
+                "19h": "19 ч",
+                "20h": "20 ч",
+                "21h": "21 ч",
+                "22h": "22 ч",
+                "23h": "23 ч",
+                "24h": "24 ч"
+            }
+        },
+        "en": {
+            "select": "It's time to choose a group to customise. Which one will it be? 🤔",
+            "add": "Manage your group like a pro! Add me ➕, and I will open you the secret functions, help you customize all the parameters ⚙️ from language to bonuses.",
+            "1": "🌎 Chat language:",
+            "2": "💠 Earnings Grand Bonus:",
+            "3": "👋 Welcome to the new participants:",
+            "4": "☕ Professional networking:",
+            "5": "🤬 Foul language:",
+            "6": "📧 Spam, adverts:",
+            "7": "💬 Flooding:",
+            "8": "🔗 Links to external resource:",
+            "9": "🔍 Keywords:",
+            "10": "👮‍♀️ Warnings:",
+            "hi_text_swich": "👋 Edit",
+            "hi_text_wait": "Please write a new welcome message and send it to me.👇",
+            "hi_text_succses": "✅ The new welcome text has been successfully installed.",
+            "language_switch": {
+                "to": "🌎 Change 🇷🇺",
+                "succses": "✅ Language successfully changed!"
+            },
+            "earn_swich": {
+                "on": "💰 Disable ❌",
+                "off": "💰 Enable ✅",
+                "succses": "✅ GRAND bonus accruals are available for chat!",
+                "failure": "❌ Members cannot earn a GRAND bonus!"
+            },
+            "good_swich": {
+                "on": "☕ Prohibit ❌",
+                "off": "☕ Authorise ✅",
+                "succses": "✅ Members are allowed to write posts without meaningful content!",
+                "failure": "❌ Participants are not allowed to write messages without meaningful content"
+            },
+            "fuck_swich": {
+                "on": "🤬 Authorise ✅",
+                "off": "🤬 Prohibi ❌",
+                "succses": "❌ Forbidden in the chat room",
+                "failure": "✅ Allowed in the chat room"
+            },
+            "spam_swich": {
+                "on": "📧 Authorise ✅",
+                "off": "📧 Prohibi ❌",
+                "succses": "❌ Forbidden in the chat room",
+                "failure": "✅ Allowed in the chat room"
+            },
+            "flood_swich": {
+                "on": "💬 Authorise ✅",
+                "off": "💬 Prohibi ❌",
+                "succses": "❌ Forbidden in the chat room",
+                "failure": "✅ Allowed in the chat room"
+            },
+            "link_swich": {
+                "on": "🔗 Authorise ✅",
+                "off": "🔗 Prohibi ❌",
+                "succses": "❌ Forbidden in the chat room",
+                "failure": "✅ Allowed in the chat room"
+            },
+            "key_swich": {
+                "add": "🔍 Add keywords",
+                "del": "🚫 Remove 🔍",
+                "wait": "Please write the words you want to ban from the group using the example below and send them to me.👇",
+                "еxample": "one, two, three, four, five",
+                "warning": "To add more words, it is recommended to copy the old words and write new words to them ‼️",
+                "succses": "✅ Keywords successfully added.",
+                "failure": "✅ The keywords have been successfully removed.",
+                "no": "❌ You didn't add words that are not allowed in the chat room!"
+            },
+            "warn_text": {
+                "edit": "👮‍♀️ Customise",     
+                "1": "-Foul language:",
+                "2": "-Spam, adverts:",
+                "4": "❌ - will remove the penalty for a warning!",
+                "5": "🚫 Ban - will remove a user from the group after a warning!",
+                "3": "-Flood:",
+                "1h": "1 h",
+                "2h": "2 h",
+                "3h": "3 h",
+                "4h": "4 h",
+                "5h": "5 h",
+                "6h": "6 h",
+                "7h": "7 h",
+                "8h": "8 h",
+                "9h": "9 h",
+                "10h": "10 h",
+                "11h": "11 h",
+                "12h": "12 h",
+                "13h": "13 h",
+                "14h": "14 h",
+                "15h": "15 h",
+                "16h": "16 h",
+                "17h": "17 h",
+                "18h": "18 h",
+                "19h": "19 h",
+                "20h": "20 h",
+                "21h": "21 h",
+                "22h": "22 h",
+                "23h": "23 h",
+                "24h": "24 h"
+            }
+        }
+      },
+      "notification_text": {
+        "rus": {
+            "flood": " флуд в чате запрещен! 🚫",
+            "spam": " сообщение было распознано как спам! ❌", 
+            "fuck": " чате запрещено использование нецензурной лексики! 🤬",                
+            "delete": "👮‍♀️ Сообщение удалено, выдано предупреждение:",
+            "mute": "🔇 Согласно правилам тебе запрещено писать:",
+            "kick": "⛔️ Согласно правилам я исключаю тебя из чата!"
+        },
+        "en": {
+            "flood": " no chatroom floozies allowed! 🚫",
+            "spam": " message has been recognised as spam! ❌", 
+            "fuck": " no foul language is allowed in the chat room! 🤬", 
+            "delete": "👮‍♀️ Message deleted, you have been issued a warning:",
+            "mute": "🔇 According to the rules, you're not allowed to post:",
+            "kick": "⛔️ According to the rules, I'm banning you from the chat room!"
+        }
+      },
+    "leave_base_text": "Ты вернулся в главное меню",
+    "staff_commands": {
+            "help_text": "🤖 <b>Список команд:</b>\n\n",
+            "prod": "📢 /prod [text] - Отправить объявление всем русскоязычным пользователям\n",
+            "proden": "📢 /proden [text] - Отправить объявление всем англоязычным пользователям\n",
+            "prodchat": "🔊 /prodchat [text] - Отправить объявление всем русскоязычным группа\n",
+            "prodchaten": "🔊 /prodchaten [text] - Отправить объявление всем англоязычным группас\n",
+            "police": "👮‍♀️ /police [user_id] - Снять ограничения по использованию тех поддержки\n",
+            "close": "⛔️ /close [user_id] - Принудительно завершить технический чат с пользователем\n",
+            "support": "🛠 /support [user_id] [@username] - Назначить пользователя в техническую поддержку\n",
+            "gift": "🎁 /gift [@username] [сумма] - Подарить пользователю G-бонус\n",
+            "iuser": "📊 /iuser [@username] - Посмотреть информацию о пользователи\n",
+            "ichat": "📊 /ichat [chat_id] - Посмотреть информацию о группе\n",
+            "chatusers": "🙎 /chatusers [chat_id] - @username всех актиных пользователей группы\n",
+            "upcoef": "⭐️ /upcoef [коэф.] - Изменить всем группам начисление за 1 слово\n",
+            "upchat": "🌀 /upchat [chat_id] [название столбца] [новое значение] - Для группы обновить значения в базе\n",
+            "upuser": "🌀 /upuser [user_id] [chat_id] [название столбца] [новое значение] - Для пользователя обновить значения в базе\n",
+            "upcreator": "🌀 /upcreator [creator_id] [chat_id] [название столбца] [новое значение] - Для создателя обновить значения в базе\n",
+            "bookinfo": "📚 /bookinfo - Посмотреть значения для рекламы книги на Рус\n",
+            "bookinfoen": "📚 /bookinfoen - Посмотреть значения для рекламы книги на Англ\n",
+            "bookadd": "📚➕ /bookadd [текст] - Добавить значение для рекламы книги на Рус\n",
+            "bookadden": "📚➕ /bookadden [текст] - Добавить значения для рекламы книги на Англ\n",
+            "bookremove": "📚🗑️ /bookremove [текст] - Удалить значение для рекламы книги на Рус\n",
+            "enbookremove": "📚🗑️ /enbookremove [текст] - Удалить значения для рекламы книги на Англ\n",
+            "delchat": "🗑️ /delchat [chat_id] - Удалить группу из базы\n",
+            "deluser": "🗑️ /deluser [user_id] - Удалить пользователя из базы\n",
+            "wspam": "🚫 /wspam - Добавить слова для фильтрации спама\n",
+            "rspam": "🔍 /rspam - Посмотреть слова для фильтрации спама\n",
+            "wfuck": "😡 /wfuck - Добавить матерные слова для фильтрации\n",
+            "rfuck": "🔍 /rfuck - Посмотреть матерные слова для фильтрации\n",
+            "wgood": "😊 /wgood - Добавить слова для фильтрации добрых сообщений (например, \"Доброе утро\")\n",
+            "rgood": "🔍 /rgood - Посмотреть слова для фильтрации добрых сообщений\n"            
+        },
+        "staff_column": {
+            "chat": {
+                "chats": "Информация о столбцах группы:\n\n",
+                "chat_id": "💬 <code>chat_id</code> - id группы\n",
+                "chat_name": "📝 <code>chat_name</code> - Название группы\n",
+                "creator_id": "👤 <code>creator_id</code> - id создателя\n",
+                "creator_username": "👤 <code>creator_username</code> - username(без @) создателя\n",
+                "language": "🌐 <code>language</code> - Язык группы(rus либо en)\n",
+                "active_users": "👥 <code>active_users</code> - Активные пользователи\n",
+                "bonus_count": "💰 <code>bonus_count</code> - Заработанный GRAND бонус\n",
+                "level_count": "🎯 <code>level_count</code> - Реферальный уровень\n",
+                "grand_count": "⭐️ <code>grand_count</code> - Коэф. GRAND бонуса (по умолчанию 1 бонус за слово)\n",
+                "earn": "💵 <code>earn</code> - Заработок группы (on_earn - Включить, off_earn - Выключить)\n",
+                "hi_text": "👋 <code>hi_text</code> - Текст приветствия группы\n",
+                "good_text": "💬 <code>good_text</code> - Профессиональное общение (on - Включить, off - Выключить)\n",
+                "spam": "🚫 <code>spam</code> - Распознавание спама (on - Включить, off - Выключить)\n",
+                "fuck": "😡 <code>fuck</code> - Распознавание мата (on - Включить, off - Выключить)\n",
+                "flood": "💦 <code>flood</code> - Распознавание флуда (on - Включить, off - Выключить)\n",
+                "link": "🔗 <code>link</code> - Распознавание ссылок (on - Включить, off - Выключить)\n",
+                "prefix": "🔖 <code>prefix</code> - Префикс распределения (grand - участник GRAND TIME, free)\n",
+                "support": "🛠 <code>support</code> - SUP режим (по умолчанию выключен у всех, был добавлен для технических групп бота)\n"
+            },
+            "user": {
+                "users": "Информация о столбцах пользователя:\n\n",
+                "chat_id": "💬 <code>chat_id</code> - id группы\n",
+                "chat_name": "📝 <code>chat_name</code> - Название группы\n",
+                "user_id": "👤 <code>user_id</code> - id пользователя\n",
+                "user_username": "👤 <code>user_username</code> - username(без @) пользователя\n",
+                "bonus_count": "💰 <code>bonus_count</code> - Заработанный GRAND бонус\n"
+            },
+            "creator": {
+                "creators": "Информация о столбцах создателя:\n\n",
+                "creator_id": "👤 <code>creator_id</code> - id создателя\n",
+                "creator_username": "👤 <code>creator_username</code> - username(без @) создателя\n",
+                "chat_id": "💬 <code>chat_id</code> - id группы\n",
+                "chat_name": "📝 <code>chat_name</code> - Название группы\n",
+                "language": "🌐 <code>language</code> - Язык группы(rus либо en)\n",
+                "bonus_count": "💰 <code>bonus_count</code> - Заработанный GRAND бонус\n",
+                "level_count": "🎯 <code>level_count</code> - Реферальный уровень\n"                
+            }
+        },
+    "commands": {
+            "rus": {
+                "allow_text": "🔒 Упс! Эта функция предназначена только для администраторов и создателя чата. Почувствуй силу контроля! 🚀",
+                "bot_text": "Эта команда не может быть использована на боте. 🤖",
+                "error_text": "❌ Кажется, что-то пошло не так. Эта команда не может быть использована для администраторов или создателя чата. Попробуйте что-нибудь другое! 🔄",
+                "unwarn": {
+                    "formate": "🔄 Используй: /unwarn @username, или ответом на сообщение /unwarn",
+                    "allow": "✅ Предупреждение успешно снято с",
+                    "error": "Что-то пошло не так и предупреждение не было снято с пользователя. 🛑"
+                },
+                "warn": {
+                    "formate": "🔄 Используй:\n/warn @username\n/warn @username причина\nРаботает и ответом на сообщение",
+                    "allow": "Ты получил(а) предупреждение! 🚨",
+                    "reason": "🚨 Ты получил(а) предупреждение по причине:",
+                    "error": "Что-то пошло не так и предупреждение не было выдано пользователю. 🛑"
+                },
+                "mute": {
+                    "formate": "🔄 Используй: /mute @usernam чтобы замутить навсегда\n/mute @usernam 2d - на 2 дня\n/mute @usernam 2h - на 2 часа\n /mute @usernam 2m - на 2 минуты\n /mute @usernam 2d 2h 2m\nРаботает и ответом на сообщение",
+                    "time_formate": "🔄 Используй:\n(2)d - дни\n(2)h - часы\n(2)m - минуты",
+                    "ban_formate": "неопределённый срок",
+                    "allow": "🔇 Тебе выдали мут на",
+                    "error": "Что-то пошло не так и пользователя не получилось замутить. 🛑"
+                },
+                "unmute": {
+                    "formate": "🔄 Используй: /unmute @username\nРаботает и ответом на сообщение",
+                    "fail": "❌ Не удалось определить пользователя",
+                    "allow": "🔊 С тебя сняли мут!",
+                    "error": "Что-то пошло не так и пользователя не получилось размутить. 🛑"
+                },
+                "kick": {
+                    "formate": "🔄 Используй: /kick @username\n/kick @username причина\nТакже работает в ответ на сообщение",
+                    "allow": "Ты исключен из группы! 🚪",
+                    "reason": "🚫 Ты был исключен из группы по причине:",
+                    "error": "Что-то пошло не так и не удалось исключить пользователя. 🛑"
+                },
+                "setrules": {
+                    "formate": "📜 Используй: /setrules правила",
+                    "allow": "✅ Правила группы успешно установлены!",
+                    "fail": "❌ Не удалось установить правила группы."
+                },
+                "editrules": {
+                    "formate": "📜 Используй: /editrules новые_правила",
+                    "allow": "✅ Правила группы успешно обновлены!",
+                    "fail": "❌ Не удалось изменить правила группы."
+                },
+                "rules": {
+                    "fail": "❌ Правила группы не удалось отправить.",
+                    "no": "📣 В данной группе пока нет установленных правил."
+                },
+                "promote": {
+                    "formate": "🔄 Используй: /promote @username\nРаботает и ответом на сообщение",
+                    "fail": "⛔️ Нельзя повысить статус администратора или создателя чата.",
+                    "allow": "Тебя повысили до администратора! 👑",
+                    "error": "❌ Что-то пошло не так и не удалось повысить пользователя до администратора."                    
+                },
+                "demote": {
+                    "formate": "🔄 Используй: /demote @username\nРаботает и ответом на сообщение",
+                    "fail": "⛔️ Нельзя понизить статус администратора или создателя чата.",
+                    "allow": "Тебя понизили до обычного пользователя! 🔻",
+                    "error": "❌ Что-то пошло не так и не удалось выполнить понижение до пользователя."                                    
+                },
+                "groupstats": {
+                    "fail": "❌ Не удалось получить статистику группы."                        
+                },
+                "stats": {
+                    "formate": "🔄 Используй: /stats @username\nРаботает и ответом на сообщение",
+                    "fail": "❌ Не удалось получить статистику пользователя."                        
+                },
+                "top": {
+                    "top": "🏆 Топ активных участников чата:\n\n",
+                    "fail": "❌ Не удалось получить топ пользователей."                        
+                },
+                "help": {
+                    "fail": "❌ Не удалось отправить список команд."                        
+                }   
+            },
+            "en": {
+                "allow_text": "🔒 Oops! This feature is for administrators and chat creator only. Feel the power of control! 🚀",
+                "bot_text": "This command cannot be used on a bot. 🤖",
+                "error_text": "❌ Something seems to have gone wrong. This command cannot be used on administrators or chat creator. Try something else! 🔄",
+                "unwarn": {
+                    "formate": "🔄 Use: /unwarn @username, or reply to a message with /unwarn",
+                    "allow": "✅ The warning has been successfully removed from the",
+                    "error": "Something went wrong and the warning was not removed from the user. 🛑"
+                },
+                "warn": {
+                    "formate": "🔄 Use:\n/warn @username\n/warn @username reason\nWorks by replying to a message",
+                    "allow": "You got a warning! 🚨",
+                    "reason": "🚨 You have received a warning for a reason:",
+                    "error": "Something went wrong and the warning was not issued to the user. 🛑"
+                },
+                "mute": {
+                    "format": "🔄 Use: /mute @username to mute permanently\n/mute @username 2d - for 2 days\n/mute @username 2h - for 2 hours\n /mute @username 2m - for 2 minutes\n /mute @username 2d 2h 2m\nAlso works by replying to a message",
+                    "time_format": "🔄 Use:\n(2)d - days\n(2)h - hours\n(2)m - minutes",
+                    "ban_format": "indefinite",
+                    "allow": "🔇 You've been muted for",
+                    "error": "Something went wrong and the user couldn't be muted. 🛑"
+                },
+                "unmute": {
+                    "formate": "🔄 Use: /unmute @username\nAlso works as a reply to a message",
+                    "fail": "❌ Failed to determine the user",
+                    "allow": "🔊 Mute lifted from you!",
+                    "error": "Something went wrong and the user couldn't be unmuted. 🛑"
+                },
+                "kick": {
+                    "formate": "🔄 Use: /kick @username\n/kick @username reason\nAlso functions as a reply to a message",
+                    "allow": "You've been kicked out of the group! 🚪",
+                    "reason": "🚫 You've been kicked out of the group due to:",
+                    "error": "Something went wrong and the user couldn't be kicked. 🛑"
+                },
+                "setrules": {
+                    "formate": "📜 Use: /setrules rules",
+                    "allow": "✅ Group rules have been successfully set!",
+                    "fail": "❌ Failed to set group rules."
+                },
+                "editrules": {
+                    "formate": "📜 Use: /editrules new_rules",
+                    "allow": "✅ Group rules have been successfully updated!",
+                    "fail": "❌ Failed to modify group rules."
+                },
+                "rules": {
+                    "fail": "❌ Failed to send group rules.",
+                    "no": "📣 There are currently no set rules in this group."                    
+                },
+                "promote": {
+                    "formate": "🔄 Use: /promote @username\nAlso works as a reply to a message",
+                    "fail": "⛔️ Unable to promote to administrator or chat creator status.",
+                    "allow": "You've been promoted to administrator! 👑",
+                    "error": "❌ Something went wrong and the user couldn't be promoted to administrator."                                     
+                },
+                "demote": {
+                    "formate": "🔄 Use: /demote @username\nAlso works as a reply to a message",
+                    "fail": "⛔️ Cannot demote to administrator or chat creator status.",
+                    "allow": "You've been demoted to a regular user! 🔻",
+                    "error": "❌ Something went wrong and couldn't complete the demotion to user."
+                },
+                "groupstats": {
+                    "fail": "❌ Failed to retrieve group statistics."
+                },
+                "stats": {
+                    "formate": "🔄 Use: /stats @username\nAlso works as a reply to a message",
+                    "fail": "❌ Failed to retrieve user statistics."
+                },
+                "top": {
+                    "top": "🏆 Top active members of the chat:\n\n",
+                    "fail": "❌ Failed to retrieve the top users."
+                },
+                "help": {
+                    "fail": "❌ Failed to send the list of commands."
+                }                                                                                             
+            }
+          }
+}
