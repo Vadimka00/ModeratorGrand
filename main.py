@@ -8455,6 +8455,8 @@ def delete_old_messages():
 # Функция для запуска планировщика задач в отдельном потоке
 def schedule_task():
     # Планируем рассылку рекламных сообщений и обновление пользователей
+    schedule.every(1).seconds.do(get_total_users_count)
+    schedule.every(1).seconds.do(get_total_chats_count)
     schedule.every(1).seconds.do(check_expired_users)
     schedule.every(1).seconds.do(delete_old_messages)
     schedule.every().wednesday.at("18:00").do(send_advertisement)
