@@ -8863,13 +8863,23 @@ def get_group_support(chat_id):
 
 
 def clean_message(message):
-    # Удаляем смайлики и эмодзи
-    cleaned_message = emoji.replace_emoji(message, replace='')
     # Удаляем HTML-теги и форматирование
-    cleaned_message = re.sub(r'<[^>]*>', '', cleaned_message)
+    cleaned_message = re.sub(r'<[^>]*>', '', message)
+    # Удаляем эмодзи
+    cleaned_message = remove_emoji(cleaned_message)
     # Удаляем лишние пробелы и символы перевода строки
     cleaned_message = ' '.join(cleaned_message.split())
     return cleaned_message
+
+def remove_emoji(text):
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               "]+", flags=re.UNICODE)
+    return emoji_pattern.sub(r'', text)
+
 
 def get_active_chat_recipient(chat_id):
     conn = sqlite3.connect('active_chats.db')
