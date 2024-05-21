@@ -25,6 +25,27 @@ bot = telebot.TeleBot("6971843804:AAHe5i1mA2j5cRSrCoJnG8UyBEpxBCYjX6k")
 # Создаем пул потоков
 executor = ThreadPoolExecutor(max_workers=500)
 
+# Определение путей к базам данных
+db_paths = {
+    "active_chats.db": "/app/dbs/active_chats.db",
+    "ad.db": "/app/dbs/ad.db",
+    "chat_data.db": "/app/dbs/chat_data.db",
+    "database.db": "/app/dbs/database.db",
+    "fuck.db": "/app/dbs/fuck.db",
+    "good.db": "/app/dbs/good.db",
+    "messages.db": "/app/dbs/messages.db",
+    "rules.db": "/app/dbs/rules.db",
+    "spam.db": "/app/dbs/spam.db",
+}
+
+def connect_to_db(db_name):
+    """Подключение к базе данных по имени"""
+    if db_name in db_paths:
+        conn = sqlite3.connect(db_paths[db_name])
+        return conn
+    else:
+        raise ValueError(f"Database '{db_name}' not found in paths")
+
 allowed_users = [1858164732, 1720624205, 547955786, 1947291534, 5808500962]
 prod_users = [1858164732, 5808500962]
 # Функция для чтения файла JSON
@@ -39,7 +60,7 @@ data = read_json_file('text_language.json')
 # Функция для сохранения сообщения в базе данных
 
 def chat_exists(chat_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM active_chats WHERE recipient_id = ? OR sender_id = ?''', (chat_id, chat_id,))
     result = cursor.fetchone()
@@ -48,7 +69,7 @@ def chat_exists(chat_id):
 
 # Функция для получения языка пользователя из базы данных
 def get_user_language(chat_id):
-    conn = sqlite3.connect('database.db')
+    conn = connect_to_db('database.db')
     cursor = conn.cursor()
     cursor.execute("SELECT language FROM users WHERE user_id=?", (chat_id,))
     language = cursor.fetchone()
@@ -156,7 +177,7 @@ def start_param(message):
 
     # Функция для подключения к базе данных /start
 def initialize_database(user_id):
-    connection = sqlite3.connect('database.db')
+    connection = connect_to_db('database.db')
     cursor = connection.cursor()
 
     # Создаем таблицу users, если её нет
@@ -186,7 +207,7 @@ def send_prefix_buttons(language, chat_id):
 # Функция для обновления префикса пользователя в базе данных
 def update_user_prefix(user_id, prefix):
     # Подключаемся к базе данных SQLite
-    connection = sqlite3.connect('database.db')
+    connection = connect_to_db('database.db')
     cursor = connection.cursor()
 
     try:
@@ -211,7 +232,7 @@ def update_user_prefix(user_id, prefix):
 # Функция для обновления префикса чата, созданного указанным пользователем
 def update_chat_prefix(user_id, prefix):
     # Подключаемся к базе данных SQLite
-    connection = sqlite3.connect('chat_data.db')
+    connection = connect_to_db('chat_data.db')
     cursor = connection.cursor()
 
     try:
@@ -326,7 +347,7 @@ def stats_button_handler(message):
         user_id = message.from_user.id
         language = "rus"
         # Подключаемся к базе данных SQLite
-        connection = sqlite3.connect('database.db')
+        connection = connect_to_db('database.db')
         cursor = connection.cursor()
 
         # Создаем таблицу users, если её нет
@@ -374,7 +395,7 @@ def stats_button_handler(message):
         user_id = message.from_user.id
         language = "en"
         # Подключаемся к базе данных SQLite
-        connection = sqlite3.connect('database.db')
+        connection = connect_to_db('database.db')
         cursor = connection.cursor()
 
         # Создаем таблицу users, если её нет
@@ -447,7 +468,7 @@ def language_buttons_handler(message):
 
 # Функция для получения информации из базы данных по chat_id
 def get_chat_info(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT * FROM chats WHERE chat_id=?", (chat_id,))
@@ -620,7 +641,7 @@ def group_stats_callback(call):
 
 # Функция для получения языка пользователя из базы данных
 def get_username_info(user_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT user_username FROM users WHERE user_id=?", (user_id,))
     username = cursor.fetchone()  # Добавляем присвоение значений
@@ -629,7 +650,7 @@ def get_username_info(user_id):
 
 # Функция для получения языка пользователя из базы данных
 def get_creators_info(user_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT chat_id, chat_name FROM creators WHERE creator_id=?", (user_id,))
     creator_rows = cursor.fetchall()  # Fetch all rows
@@ -641,7 +662,7 @@ def get_creators_info(user_id):
 
 # Функция для получения языка пользователя из базы данных
 def get_prof_info(user_id):
-    conn = sqlite3.connect('database.db')
+    conn = connect_to_db('database.db')
     cursor = conn.cursor()
     cursor.execute("SELECT language, prefix FROM users WHERE user_id=?", (user_id,))
     language, prefix = cursor.fetchone()  # Добавляем присвоение значений
@@ -650,7 +671,7 @@ def get_prof_info(user_id):
 
 def null_update_users():
     # Подключение к базе данных
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     
     # Обновление всех значений в таблице users на 0
@@ -668,7 +689,7 @@ def null_update_users():
 
 def null_update_chats():
     # Подключение к базе данных
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     
     # Обновление всех значений в таблице users на 0
@@ -686,7 +707,7 @@ def null_update_chats():
 
 def null_update_creators():
     # Подключение к базе данных
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     
     # Обновление всех значений в таблице users на 0
@@ -725,7 +746,7 @@ def add_support_entry(message):
         support_name = args[2]
 
         # Подключение к базе данных
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
 
         # Создание таблицы support, если её ещё нет
@@ -802,7 +823,7 @@ def handle_police_command(message):
         bot.reply_to(message, "Недоступно для тебя")
 
 def delete_user_from_police(user_id):
-    connection = sqlite3.connect('chat_data.db')
+    connection = connect_to_db('chat_data.db')
     cursor = connection.cursor()
 
     # Удаляем пользователя из таблицы
@@ -856,7 +877,7 @@ def send_chat_info(message):
 
 # Функция для получения информации из базы данных по chat_id
 def get_chat_users(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT user_id, user_username FROM users WHERE chat_id=?", (chat_id,))
@@ -904,7 +925,7 @@ def send_chat_users(message):
 
 # Функция для получения информации из базы данных по chat_id
 def get_chat_info(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT * FROM chats WHERE chat_id=?", (chat_id,))
@@ -981,7 +1002,7 @@ def send_chat_info(message):
 
     # Функция для обновления значения указанного столбца для указанного чата
 def update_creator_column(creator_id, chat_id, column_name, new_value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute(f"UPDATE creators SET {column_name}=? WHERE creator_id=? AND chat_id=?", (new_value, creator_id, chat_id))
@@ -1019,7 +1040,7 @@ def update_chat_column_handler(message):
 
     # Функция для обновления значения указанного столбца для указанного чата
 def update_user_column(user_id, chat_id, column_name, new_value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute(f"UPDATE users SET {column_name}=? WHERE user_id=? AND chat_id=?", (new_value, user_id, chat_id))
@@ -1057,7 +1078,7 @@ def update_chat_column_handler(message):
 
     # Функция для обновления значения указанного столбца для указанного чата
 def update_chat_column(chat_id, column_name, new_value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute(f"UPDATE chats SET {column_name}=? WHERE chat_id=?", (new_value, chat_id))
@@ -1094,7 +1115,7 @@ def update_chat_column_handler(message):
 
 # Функция для обновления значения указанного столбца для указанного пользователя
 def gift_grand(user_id, coef):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         # Выбираем случайный chat_id для отправки сообщения
@@ -1179,7 +1200,7 @@ def update_chat_column_handler(message):
 
     # Функция для обновления значения указанного столбца для указанного чата
 def update_coef(coef):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute("UPDATE chats SET grand_count = ?", (coef,))
@@ -1222,7 +1243,7 @@ def update_chat_column_handler(message):
 
 # Функция для добавления значения в таблицу book
 def add_to_book_en(value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO book_en (value) VALUES (?)''', (value,))
     conn.commit()
@@ -1246,7 +1267,7 @@ def handle_book_add_command(message):
 
 # Функция для добавления значения в таблицу book
 def add_to_book(value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO book (value) VALUES (?)''', (value,))
     conn.commit()
@@ -1268,7 +1289,7 @@ def handle_book_add_command(message):
 
 # Функция для удаления значения из таблицы book
 def remove_from_book(value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''DELETE FROM book WHERE value = ?''', (value,))
     conn.commit()
@@ -1291,7 +1312,7 @@ def handle_book_remove_command(message):
 
 # Функция для удаления значения из таблицы book
 def en_remove_from_book(value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''DELETE FROM book_en WHERE value = ?''', (value,))
     conn.commit()
@@ -1314,7 +1335,7 @@ def handle_book_remove_command(message):
 
 # Функция для получения всех значений из таблицы book
 def get_book_info_en():
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM book_en''')
     rows = cursor.fetchall()
@@ -1337,7 +1358,7 @@ def handle_book_info_command(message):
 
 # Функция для получения всех значений из таблицы book
 def get_book_info():
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT * FROM book''')
     rows = cursor.fetchall()
@@ -1360,7 +1381,7 @@ def handle_book_info_command(message):
 
     # Функция для удаления данных о чате и создателе из базы данных
 def remove_chat_and_creator_from_db(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM chats WHERE chat_id=?", (chat_id,))
@@ -1379,7 +1400,7 @@ def remove_chat_and_creator_from_db(chat_id):
         conn.close()
 
 def remove_chat_db(chat_id):
-    conn = sqlite3.connect('database.db')
+    conn = connect_to_db('database.db')
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM chats WHERE chat_id=?", (chat_id,))
@@ -1425,7 +1446,7 @@ def delete_chat_and_creator(message):
 
 def delete_user(user_id):
     # Подключаемся к базе данных SQLite для удаления пользователя из таблицы users
-    connection = sqlite3.connect('database.db')
+    connection = connect_to_db('database.db')
     cursor = connection.cursor()
 
     # Удаляем пользователя из таблицы users
@@ -1436,7 +1457,7 @@ def delete_user(user_id):
     connection.close()
 
     # Подключаемся к базе данных SQLite для удаления пользователя из таблицы active_chats
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
 
     # Удаляем пользователя из таблицы active_chats
@@ -1502,7 +1523,7 @@ def send_info_to_en_users(info_message):
     sent_count = 0
     try:
         # Открываем соединение с базой данных SQLite для пользователей
-        connection_users = sqlite3.connect('database.db')
+        connection_users = connect_to_db('database.db')
         cursor_users = connection_users.cursor()
 
         # Получаем всех пользователей из базы данных
@@ -1565,7 +1586,7 @@ def send_info_to_chats_en(info_message):
     sent_count = 0
     try:
         # Открываем соединение с базой данных SQLite для пользователей
-        connection_users = sqlite3.connect('chat_data.db')
+        connection_users = connect_to_db('chat_data.db')
         cursor_users = connection_users.cursor()
 
         # Получаем всех пользователей из базы данных
@@ -1627,7 +1648,7 @@ def send_info_to_chats(info_message):
     sent_count = 0
     try:
         # Открываем соединение с базой данных SQLite для пользователей
-        connection_users = sqlite3.connect('chat_data.db')
+        connection_users = connect_to_db('chat_data.db')
         cursor_users = connection_users.cursor()
 
         # Получаем всех пользователей из базы данных
@@ -1690,7 +1711,7 @@ def send_info_to_users(info_message):
     sent_count = 0
     try:
         # Открываем соединение с базой данных SQLite для пользователей
-        connection_users = sqlite3.connect('database.db')
+        connection_users = connect_to_db('database.db')
         cursor_users = connection_users.cursor()
 
         # Получаем всех пользователей из базы данных
@@ -1721,7 +1742,7 @@ def send_info_to_users(info_message):
 
 # Проверка наличия ключевого слова в базе данных
 def is_keyword_read_spam():
-    with sqlite3.connect('spam.db') as conn:
+    with connect_to_db('spam.db') as conn:
         try:
             c = conn.cursor()
             c.execute('SELECT COUNT(keyword) FROM keywords')
@@ -1735,7 +1756,7 @@ def is_keyword_read_spam():
 def read_good_keywords(message):
     if message.from_user and message.from_user.id in allowed_users:
         if is_keyword_read_spam():
-            with sqlite3.connect('spam.db') as conn:
+            with connect_to_db('spam.db') as conn:
                 try:
                     c = conn.cursor()
                     c.execute('SELECT keyword FROM keywords')
@@ -1754,7 +1775,7 @@ def read_good_keywords(message):
 
 # Проверка наличия ключевого слова в базе данных
 def is_keyword_exists(keyword):
-    conn = sqlite3.connect('spam.db')
+    conn = connect_to_db('spam.db')
     c = conn.cursor()
     c.execute('SELECT COUNT(*) FROM keywords WHERE keyword=?', (keyword,))
     result = c.fetchone()[0]
@@ -1788,7 +1809,7 @@ def write_spam_keywords(message):
 
 # Добавление нового ключевого слова в базу данных
 def add_fuck_keyword(keyword_phrase):
-    conn = sqlite3.connect('fuck.db')
+    conn = connect_to_db('fuck.db')
     c = conn.cursor()
     c.execute('INSERT OR IGNORE INTO keywords (keyword) VALUES (?)', (keyword_phrase,))
     conn.commit()
@@ -1796,7 +1817,7 @@ def add_fuck_keyword(keyword_phrase):
 
 # Проверка наличия ключевого слова в базе данных
 def is_keyword_read_fuck():
-    with sqlite3.connect('fuck.db') as conn:
+    with connect_to_db('fuck.db') as conn:
         try:
             c = conn.cursor()
             c.execute('SELECT COUNT(keyword) FROM keywords')
@@ -1810,7 +1831,7 @@ def is_keyword_read_fuck():
 def read_good_keywords(message):
     if message.from_user and message.from_user.id in allowed_users:
         if is_keyword_read_fuck():
-            with sqlite3.connect('fuck.db') as conn:
+            with connect_to_db('fuck.db') as conn:
                 try:
                     c = conn.cursor()
                     c.execute('SELECT keyword FROM keywords')
@@ -1829,7 +1850,7 @@ def read_good_keywords(message):
 
 # Проверка наличия ключевого слова в базе данных
 def is_keyword_fuck(keyword):
-    conn = sqlite3.connect('fuck.db')
+    conn = connect_to_db('fuck.db')
     c = conn.cursor()
     c.execute('SELECT COUNT(*) FROM keywords WHERE keyword=?', (keyword,))
     result = c.fetchone()[0]
@@ -1863,7 +1884,7 @@ def write_spam_keywords(message):
 
 # Добавление нового ключевого слова в базу данных
 def add_good_keyword(keyword_phrase):
-    conn = sqlite3.connect('good.db')
+    conn = connect_to_db('good.db')
     c = conn.cursor()
     c.execute('INSERT OR IGNORE INTO keywords (keyword) VALUES (?)', (keyword_phrase,))
     conn.commit()
@@ -1871,7 +1892,7 @@ def add_good_keyword(keyword_phrase):
 
 # Проверка наличия ключевого слова в базе данных
 def is_keyword_good(keyword):
-    conn = sqlite3.connect('good.db')
+    conn = connect_to_db('good.db')
     c = conn.cursor()
     c.execute('SELECT COUNT(*) FROM keywords WHERE keyword=?', (keyword,))
     result = c.fetchone()[0]
@@ -1902,7 +1923,7 @@ def write_spam_keywords(message):
 
 # Проверка наличия ключевого слова в базе данных
 def is_keyword_read_good():
-    with sqlite3.connect('good.db') as conn:
+    with connect_to_db('good.db') as conn:
         try:
             c = conn.cursor()
             c.execute('SELECT COUNT(keyword) FROM keywords')
@@ -1916,7 +1937,7 @@ def is_keyword_read_good():
 def read_good_keywords(message):
     if message.from_user and message.from_user.id in allowed_users:
         if is_keyword_read_good():
-            with sqlite3.connect('good.db') as conn:
+            with connect_to_db('good.db') as conn:
                 try:
                     c = conn.cursor()
                     c.execute('SELECT keyword FROM keywords')
@@ -1959,7 +1980,7 @@ def back_handler(message):
 @bot.message_handler(func=lambda message: message.text == f'🙎')
 def users_handler(message):
     if message.from_user.id in allowed_users:
-        connection_users = sqlite3.connect('database.db')
+        connection_users = connect_to_db('database.db')
         cursor_users = connection_users.cursor()
 
         try:
@@ -2012,7 +2033,7 @@ def users_handler(message):
 @bot.message_handler(func=lambda message: message.text == f'🗂')
 def chats_handler(message):
     if message.from_user.id in allowed_users:
-        connection_chats = sqlite3.connect('chat_data.db')
+        connection_chats = connect_to_db('chat_data.db')
         cursor_chats = connection_chats.cursor()
 
         try:
@@ -2065,7 +2086,7 @@ def chats_handler(message):
 def base_handler(message):
     try:
         if message.from_user.id in allowed_users:
-            connection_users = sqlite3.connect('database.db')
+            connection_users = connect_to_db('database.db')
             cursor_users = connection_users.cursor()
 
             try:
@@ -2079,7 +2100,7 @@ def base_handler(message):
             cursor_users.close()
             connection_users.close()
 
-            connection_chats = sqlite3.connect('chat_data.db')
+            connection_chats = connect_to_db('chat_data.db')
             cursor_chats = connection_chats.cursor()
 
             try:
@@ -2356,7 +2377,7 @@ def back_to_groups_callback_handler(call):
 
     # Функция для получения имени группы и количества активных пользователей
 def get_name_groups(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT chat_name, active_users FROM chats WHERE chat_id=?", (group_id,))
     groups = cursor.fetchall()
@@ -2365,7 +2386,7 @@ def get_name_groups(group_id):
 
     # Функция для получения реферальных начислений и уровня
 def get_user_groups_reward(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT bonus_count, level_count FROM creators WHERE chat_id=?", (group_id,))
     groups = cursor.fetchall()
@@ -2439,7 +2460,7 @@ def settings_buttons_handler(message):
 
     # Функция для получения списка групп создателя из базы данных
 def get_user_groups(creator_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT chat_id, chat_name FROM chats WHERE creator_id=?", (creator_id,))
     groups = cursor.fetchall()
@@ -2448,7 +2469,7 @@ def get_user_groups(creator_id):
 
     # Функция для получения данных из группы возможных к изменению
 def get_group_info(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT chat_name, language, earn, hi_text, good_text, fuck, spam, flood, link, key, duration_flood1, duration_flood2, duration_flood3, duration_spam1, duration_spam2, duration_spam3, duration_fuck1, duration_fuck2, duration_fuck3 FROM chats WHERE chat_id=?", (group_id,))
     group_info = cursor.fetchone()
@@ -2778,7 +2799,7 @@ def group_back_settings_handler(call):
 
     # Функция для получения языка группы из базы данных
 def get_group_language(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT language FROM chats WHERE chat_id=?", (group_id,))
     language = cursor.fetchone()[0]
@@ -2787,7 +2808,7 @@ def get_group_language(group_id):
 
         # Функция для обновления языка группы в базе данных
 def update_group_language(group_id, new_language):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET language=? WHERE chat_id=?", (new_language, group_id))
     conn.commit()
@@ -2796,7 +2817,7 @@ def update_group_language(group_id, new_language):
 
     # Функция для обновления языка группы в базе данных
 def update_group_hi_text(group_id, new_text):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET hi_text=? WHERE chat_id=?", (new_text, group_id))
     conn.commit()
@@ -2856,7 +2877,7 @@ def switch_group_language_handler(call):
 
     # Функция для получения языка группы из базы данных
 def get_group_earn(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT earn FROM chats WHERE chat_id=?", (group_id,))
     earn = cursor.fetchone()[0]
@@ -2865,7 +2886,7 @@ def get_group_earn(group_id):
 
     # Функция для обновления языка группы в базе данных
 def update_group_earn(group_id, new_earn):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET earn=? WHERE chat_id=?", (new_earn, group_id))
     conn.commit()
@@ -2919,7 +2940,7 @@ def switch_group_earn_handler(call):
 
     # Функция для получения инфо о проф общении группы из базы данных
 def get_group_good_text(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT good_text FROM chats WHERE chat_id=?", (group_id,))
     good_text = cursor.fetchone()[0]
@@ -2928,7 +2949,7 @@ def get_group_good_text(group_id):
 
     # Функция для обновления инфо о проф общении группы в базе данных
 def update_group_good_text(group_id, new_good_text):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET good_text=? WHERE chat_id=?", (new_good_text, group_id))
     conn.commit()
@@ -2981,7 +3002,7 @@ def switch_group_good_text_handler(call):
 
     # Функция для получения инфо о мате группы из базы данных
 def get_group_fuck(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT fuck FROM chats WHERE chat_id=?", (group_id,))
     good_text = cursor.fetchone()[0]
@@ -2990,7 +3011,7 @@ def get_group_fuck(group_id):
 
     # Функция для обновления инфо о мате группы в базе данных
 def update_group_fuck(group_id, new_fuck):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET fuck=? WHERE chat_id=?", (new_fuck, group_id))
     conn.commit()
@@ -3042,7 +3063,7 @@ def switch_group_fuck_handler(call):
 
     # Функция для получения инфо о спаме группы из базы данных
 def get_group_spam(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT spam FROM chats WHERE chat_id=?", (group_id,))
     good_text = cursor.fetchone()[0]
@@ -3051,7 +3072,7 @@ def get_group_spam(group_id):
 
     # Функция для обновления инфо о спаме группы в базе данных
 def update_group_spam(group_id, new_spam):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET spam=? WHERE chat_id=?", (new_spam, group_id))
     conn.commit()
@@ -3103,7 +3124,7 @@ def switch_group_spam_handler(call):
 
     # Функция для получения инфо о флуде группы из базы данных
 def get_group_flood(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT flood FROM chats WHERE chat_id=?", (group_id,))
     good_text = cursor.fetchone()[0]
@@ -3112,7 +3133,7 @@ def get_group_flood(group_id):
 
     # Функция для обновления инфо о флуде группы в базе данных
 def update_group_flood(group_id, new_flood):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET flood=? WHERE chat_id=?", (new_flood, group_id))
     conn.commit()
@@ -3164,7 +3185,7 @@ def switch_group_flood_handler(call):
 
     # Функция для получения инфо о ссылках группы из базы данных
 def get_group_link(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT link FROM chats WHERE chat_id=?", (group_id,))
     good_text = cursor.fetchone()[0]
@@ -3173,7 +3194,7 @@ def get_group_link(group_id):
 
     # Функция для обновления инфо о ссылках группы в базе данных
 def update_group_link(group_id, new_link):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET link=? WHERE chat_id=?", (new_link, group_id))
     conn.commit()
@@ -3226,7 +3247,7 @@ def switch_group_flood_handler(call):
 
 # Функция установки статуса ожидания нового текста приветствия
 def set_waiting_hi_text(chat_id, group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("INSERT INTO waiting_hi_text (chat_id, group_id) VALUES (?, ?)", (chat_id, group_id))
     conn.commit()
@@ -3234,7 +3255,7 @@ def set_waiting_hi_text(chat_id, group_id):
 
 # Функция получения статуса ожидания нового текста приветствия
 def get_waiting_hi_text(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT group_id FROM waiting_hi_text WHERE chat_id=?", (chat_id,))
     group_id = cursor.fetchone()
@@ -3243,7 +3264,7 @@ def get_waiting_hi_text(chat_id):
 
 # Функция удаления статуса ожидания нового текста приветствия
 def remove_waiting_hi_text(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("DELETE FROM waiting_hi_text WHERE chat_id=?", (chat_id,))
     conn.commit()
@@ -3251,7 +3272,7 @@ def remove_waiting_hi_text(chat_id):
 
 # Функция для получения языка группы из базы данных
 def get_group_hi_text(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT hi_text FROM chats WHERE chat_id=?", (group_id,))
     hi_text = cursor.fetchone()[0]
@@ -3260,7 +3281,7 @@ def get_group_hi_text(group_id):
 
 # Функция для обновления языка группы в базе данных
 def update_group_hi_text(group_id, new_hi_text):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET hi_text=? WHERE chat_id=?", (new_hi_text, group_id))
     conn.commit()
@@ -3345,7 +3366,7 @@ def update_hi_text_handler(message):
 
 # Функция для установки статуса ожидания нового текста приветствия
 def set_waiting_keyadd(chat_id, group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("INSERT OR REPLACE INTO waiting_keywords (chat_id, group_id) VALUES (?, ?)", (chat_id, group_id))
     conn.commit()
@@ -3353,7 +3374,7 @@ def set_waiting_keyadd(chat_id, group_id):
 
 # Функция получения статуса ожидания нового текста приветствия
 def get_waiting_keyadd(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT group_id FROM waiting_keywords WHERE chat_id=?", (chat_id,))
     group_id = cursor.fetchone()
@@ -3362,7 +3383,7 @@ def get_waiting_keyadd(chat_id):
 
 # Функция удаления статуса ожидания нового текста приветствия
 def remove_waiting_keyadd(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("DELETE FROM waiting_keywords WHERE chat_id=?", (chat_id,))
     conn.commit()
@@ -3370,7 +3391,7 @@ def remove_waiting_keyadd(chat_id):
 
 # Функция для получения ключевых слов группы из базы данных
 def get_group_keyadd(group_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT key FROM chats WHERE chat_id=?", (group_id,))
     key = cursor.fetchone()[0]
@@ -3379,7 +3400,7 @@ def get_group_keyadd(group_id):
 
 # Функция для обновления языка группы в базе данных
 def update_group_keyadd(group_id, new_key):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE chats SET key=? WHERE chat_id=?", (new_key, group_id))
     conn.commit()
@@ -3582,7 +3603,7 @@ def warn_group_edit_handler(call):
         logging.error(error_message)
 
 def update_group_duration(group_id, column_name, new_value):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute(f"UPDATE chats SET {column_name}=? WHERE chat_id=?", (new_value, group_id))
     conn.commit()
@@ -4619,10 +4640,10 @@ def connect_db():
     Функция для подключения к базе данных chat_data.db.
 
     Returns:
-        sqlite3.Connection: Объект соединения с базой данных.
+        connect_to_dbion: Объект соединения с базой данных.
     """
     try:
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         return conn
     except Exception as e:
         print(f"Error connecting to database: {e}")
@@ -4773,7 +4794,7 @@ def format_duration(seconds):
 # Функция для получения идентификаторов сообщений для указанного чата
 def get_message_ids(chat_id):
     # Создание нового соединения с базой данных
-    with sqlite3.connect("messages.db") as conn:
+    with connect_to_db("messages.db") as conn:
         # Создание курсора для выполнения запроса
         cursor = conn.cursor()
         # Выполнение SQL-запроса для получения идентификаторов сообщений
@@ -4784,7 +4805,7 @@ def get_message_ids(chat_id):
 # Функция для удаления сообщения из базы данных
 def delete_message(chat_id, message_id):
     # Создание нового соединения с базой данных
-    with sqlite3.connect("messages.db") as conn:
+    with connect_to_db("messages.db") as conn:
         # Создание курсора для выполнения запроса
         cursor = conn.cursor()
         # Выполнение SQL-запроса для удаления сообщения
@@ -4796,7 +4817,7 @@ def delete_message(chat_id, message_id):
 def get_group_statistics_by_chat_id(chat_id):
     try:
         # Подключение к базе данных
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
 
         cursor.execute("SELECT chat_id, chat_name, creator_id, creator_username, active_users, language, message_count, bonus_count, word_count, warn_count, earn, hi_text, good_text FROM chats WHERE chat_id=?", (chat_id,))
@@ -4818,7 +4839,7 @@ def get_group_statistics_by_chat_id(chat_id):
 def get_user_statistics_by_chat_id(user_id, chat_id):
     try:
         # Подключение к базе данных
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
 
         cursor.execute("SELECT user_username, message_count, bonus_count, word_count, warn_count FROM users WHERE chat_id=? AND user_id=?", (chat_id, user_id,))
@@ -5252,7 +5273,7 @@ def set_rules(message):
         rules_text = message.text.split(maxsplit=1)[1]
 
         # Подключаемся к базе данных rules.db
-        conn = sqlite3.connect('rules.db')
+        conn = connect_to_db('rules.db')
         cursor = conn.cursor()
 
         # Сохраняем правила в базу данных
@@ -5309,7 +5330,7 @@ def edit_rules(message):
         new_rules_text = message.text.split(maxsplit=1)[1]
 
         # Подключаемся к базе данных rules.db
-        conn = sqlite3.connect('rules.db')
+        conn = connect_to_db('rules.db')
         cursor = conn.cursor()
 
         # Обновляем правила в базе данных
@@ -5348,7 +5369,7 @@ def send_rules(message):
         no = data['commands'][language]['rules']['no']
         fail = data['commands'][language]['rules']['fail']
         # Подключаемся к базе данных rules.db
-        conn = sqlite3.connect('rules.db')
+        conn = connect_to_db('rules.db')
         cursor = conn.cursor()
 
         # Получаем текст правил из базы данных
@@ -5643,7 +5664,7 @@ def top_users(message):
             return
 
         # Получаем список пользователей для топа
-        connection_users = sqlite3.connect('chat_data.db')
+        connection_users = connect_to_db('chat_data.db')
         cursor_users = connection_users.cursor()
         cursor_users.execute("SELECT user_id, message_count, user_username FROM users WHERE chat_id = ? ORDER BY message_count DESC LIMIT 30", (chat_id,))
         top_users = cursor_users.fetchall()
@@ -5829,7 +5850,7 @@ def grand_buttons_handler(message):
 
 
 # Создание базы данных и таблицы
-conn = sqlite3.connect('active_chats.db')
+conn = connect_to_db('active_chats.db')
 cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS active_chats
                   (sender_id INTEGER PRIMARY KEY, recipient_id INTEGER, message INTEGER, message_id INTEGER, language INTEGER)''')
@@ -5839,7 +5860,7 @@ conn.close()
 
 # Функция для удаления активного чата из базы данных
 def remove_active_chat(user_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''DELETE FROM active_chats WHERE user_id = ?''', (user_id,))
     conn.commit()
@@ -5847,7 +5868,7 @@ def remove_active_chat(user_id):
 
 # Функция для получения чата, с которым пользователь активно общается
 def get_active_chat(user_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT chat_id FROM active_chats WHERE user_id = ?''', (user_id,))
     result = cursor.fetchone()
@@ -5962,7 +5983,7 @@ def get_block_time(sender_id):
         datetime: Время блокировки (если пользователь заблокирован), иначе None
     """
 
-    connection = sqlite3.connect('chat_data.db')
+    connection = connect_to_db('chat_data.db')
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -5983,7 +6004,7 @@ def get_block_time(sender_id):
         return None
 
 def get_active(chat_id):
-    connection = sqlite3.connect('active_chats.db')
+    connection = connect_to_db('active_chats.db')
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -6174,7 +6195,7 @@ def process_edited_message(message, language_user, sender_id):
 
 
 def save_to_database(sender_id, message_id, message, language, recipient_id=None):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO active_chats (sender_id, message_id, recipient_id, message, language) VALUES (?, ?, ?, ?, ?)''', (sender_id, message_id, recipient_id, message, language))
     conn.commit()
@@ -6252,7 +6273,7 @@ def send_message_callback(call):
 
 
 def get_chat_info_help(message_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT sender_id, message, recipient_id, language FROM active_chats WHERE message_id = ?''', (message_id,))
     chat_info = cursor.fetchone()
@@ -6261,7 +6282,7 @@ def get_chat_info_help(message_id):
 
 def get_support_entry(support_id):
     # Подключение к базе данных
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
 
     # Поиск записи по support_id
@@ -6281,7 +6302,7 @@ def reject_callback(call):
         support_id = call.from_user.id
         support_data = get_support_entry(support_id)
         # Проверяем существует ли запись с данным message_id
-        conn = sqlite3.connect('active_chats.db')
+        conn = connect_to_db('active_chats.db')
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM active_chats WHERE recipient_id = ?''', (support_id,))
         existing_entry = cursor.fetchone()
@@ -6294,14 +6315,14 @@ def reject_callback(call):
 
         else:
 
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''UPDATE active_chats SET recipient_id = ? WHERE message_id = ?''', (call.from_user.id, message_id))
             conn.commit()
             conn.close()
 
             # Получаем sender_id из базы данных по message_id
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''SELECT sender_id, message, language FROM active_chats WHERE message_id = ?''', (message_id,))
             result = cursor.fetchone()
@@ -6385,7 +6406,7 @@ def send_reject_callback(call):
         message = call.message.text
 
         # Получаем sender_id из базы данных по message_id
-        conn = sqlite3.connect('active_chats.db')
+        conn = connect_to_db('active_chats.db')
         cursor = conn.cursor()
         cursor.execute('''SELECT sender_id, language FROM active_chats WHERE recipient_id = ?''', (recipient_id,))
         result = cursor.fetchone()
@@ -6401,7 +6422,7 @@ def send_reject_callback(call):
             else: 
                 bot.send_message(senderto_id, f"⛔️ Твой запрос был отклонен по причине: {message}")
 
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''DELETE FROM active_chats WHERE sender_id = ?''', (senderto_id,))
             conn.commit()
@@ -6459,7 +6480,7 @@ def reject_without_reasont_buttons_handler(message):
             new_keyboard = send_new_buttons(language_user, sender_id)
 
             # Получаем sender_id из базы данных по message_id
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''SELECT sender_id, language FROM active_chats WHERE recipient_id = ?''', (recipient_id,))
             result = cursor.fetchone()
@@ -6475,7 +6496,7 @@ def reject_without_reasont_buttons_handler(message):
                 else:
                     bot.send_message(senderto_id, "⛔️ Your request has been rejected without giving a reason")
 
-                conn = sqlite3.connect('active_chats.db')
+                conn = connect_to_db('active_chats.db')
                 cursor = conn.cursor()
                 cursor.execute('''DELETE FROM active_chats WHERE sender_id = ?''', (senderto_id,))
                 conn.commit()
@@ -6518,7 +6539,7 @@ def accept_callback(call):
         support_data = get_support_entry(support_id)
 
         # Проверяем существует ли запись с данным message_id
-        conn = sqlite3.connect('active_chats.db')
+        conn = connect_to_db('active_chats.db')
         cursor = conn.cursor()
         cursor.execute('''SELECT * FROM active_chats WHERE recipient_id = ?''', (support_id,))
         existing_entry = cursor.fetchone()
@@ -6530,7 +6551,7 @@ def accept_callback(call):
             bot.send_message(call.from_user.id, "Заверши прошлый разговор.")
         else:
             # Теперь обновляем запись
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''UPDATE active_chats SET recipient_id = ? WHERE message_id = ?''', (call.from_user.id, message_id))
             conn.commit()
@@ -6541,14 +6562,14 @@ def accept_callback(call):
             # Если запись не существует, продолжаем выполнение кода
 
             # Устанавливаем recipient_id в базе данных
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''UPDATE active_chats SET recipient_id = ? WHERE message_id = ?''', (call.from_user.id, message_id))
             conn.commit()
             conn.close()
 
             # Получаем sender_id из базы данных по message_id
-            conn = sqlite3.connect('active_chats.db')
+            conn = connect_to_db('active_chats.db')
             cursor = conn.cursor()
             cursor.execute('''SELECT sender_id, message, recipient_id, language FROM active_chats WHERE message_id = ?''', (message_id,))
             result = cursor.fetchone()
@@ -6608,14 +6629,14 @@ def rank_keyboard():
 
 
 def delete_chat(sender_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''DELETE FROM active_chats WHERE sender_id = ?''', (sender_id, ))
     conn.commit()
     conn.close()
 
 def get_recipient_like(sender_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT recipient_id FROM active_chats WHERE sender_id = ?''', (sender_id,))
     recipient_id = cursor.fetchone()
@@ -6624,7 +6645,7 @@ def get_recipient_like(sender_id):
     return recipient_id[0] if recipient_id else None
 
 def get_sender_like(chat_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT sender_id FROM active_chats WHERE sender_id = ?''', (chat_id,))
     sender_id = cursor.fetchone()
@@ -6634,7 +6655,7 @@ def get_sender_like(chat_id):
 
 
 def increment_like_count(recipient_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''UPDATE support SET like = like + 1 WHERE support_id = ?''', (recipient_id,))
     conn.commit()
@@ -6725,7 +6746,7 @@ def like_buttons_handler(message):
     
 
 def increment_dislike_count(recipient_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''UPDATE support SET dislike = dislike + 1 WHERE support_id = ?''', (recipient_id,))
     conn.commit()
@@ -6766,7 +6787,7 @@ def like_buttons_handler(message):
         logging.error(error_message)
 
 def get_recipient(chat_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT recipient_id FROM active_chats WHERE recipient_id = ?''', (chat_id,))
     recipient_id = cursor.fetchone()
@@ -6775,7 +6796,7 @@ def get_recipient(chat_id):
     return recipient_id[0] if recipient_id else None
 
 def get_sender(recipient_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT sender_id FROM active_chats WHERE recipient_id = ?''', (recipient_id,))
     sender_id = cursor.fetchone()
@@ -6784,7 +6805,7 @@ def get_sender(recipient_id):
     return sender_id[0] if sender_id else None
 
 def get_recipient_to(sender_id_to):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT recipient_id FROM active_chats WHERE sender_id = ?''', (sender_id_to,))
     recipient_id = cursor.fetchone()
@@ -6793,7 +6814,7 @@ def get_recipient_to(sender_id_to):
     return recipient_id[0] if recipient_id else None
 
 def get_sender_to(chat_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT sender_id FROM active_chats WHERE sender_id = ?''', (chat_id,))
     sender_id = cursor.fetchone()
@@ -6898,14 +6919,14 @@ def send_new_buttons_sender_id_to(language, chat_id):
     return keyboard
 
 def delete_chats(sender_id_to):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''DELETE FROM active_chats WHERE sender_id = ?''', (sender_id_to, ))
     conn.commit()
     conn.close()
 
 def get_recipient(user_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT recipient_id FROM active_chats WHERE recipient_id = ?''', (user_id,))
     recipient_id = cursor.fetchone()
@@ -6914,7 +6935,7 @@ def get_recipient(user_id):
     return recipient_id[0] if recipient_id else None
 
 def get_sender_language(sender_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT language FROM active_chats WHERE sender_id = ?''', (sender_id,))
     recipient_id = cursor.fetchone()
@@ -7004,7 +7025,7 @@ def check_expired_users():
     Проверяет время блокировки для пользователей и удаляет их, если время блокировки истекло.
     """
 
-    connection = sqlite3.connect('chat_data.db')
+    connection = connect_to_db('chat_data.db')
     cursor = connection.cursor()
 
     # Получаем текущее время
@@ -7034,7 +7055,7 @@ def block_user(sender_id, block_time):
         block_time (timedelta): Время блокировки (timedelta объект)
     """
 
-    connection = sqlite3.connect('chat_data.db')
+    connection = connect_to_db('chat_data.db')
     cursor = connection.cursor()
 
     # Создаем триггер для обнуления значений после истечения срока блокировки
@@ -7443,7 +7464,7 @@ def ad_buttons(user_id):
         pass
 
 def save_proposal(user_id, username, proposal, message_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
     cursor.execute('INSERT INTO proposals (user_id, username, proposal, message_id) VALUES (?, ?, ?, ?)', 
                    (user_id, username, proposal, message_id))
@@ -7451,7 +7472,7 @@ def save_proposal(user_id, username, proposal, message_id):
     conn.close()
 
 def get_proposal(message_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
     cursor.execute('SELECT user_id, username, proposal FROM proposals WHERE message_id = ?', (message_id,))
     result = cursor.fetchone()
@@ -7509,7 +7530,7 @@ def confirm_sending(call):
         bot.send_message(-1001810568716, f"🔔 Новое предложение от @{username} (ID: {user_id}):\n\n{proposal}")
 
 def create_db():
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS proposals (
@@ -7557,7 +7578,7 @@ def balance_button_handler(message):
 
 
 def get_total_balance():
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     cursor.execute("SELECT SUM(amount) FROM balance2")
@@ -7568,7 +7589,7 @@ def get_total_balance():
     return total_balance
 
 def get_ad_balances():
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     cursor.execute("SELECT ad_id, amount, data FROM balance2")
@@ -7592,7 +7613,7 @@ def ad_button_handler(message):
         bot.send_message(chat_id=user_id, text="Эта кнопка не работает!")
 
 def get_all_ad_info():
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для получения данных для всех записей
@@ -7604,7 +7625,7 @@ def get_all_ad_info():
     return all_ad_info
 
 def count_users_with_prefix_and_language(prefix, language):
-    conn = sqlite3.connect('database.db')
+    conn = connect_to_db('database.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для подсчета пользователей с заданными значениями prefix и language
@@ -7616,7 +7637,7 @@ def count_users_with_prefix_and_language(prefix, language):
     return count
 
 def count_chats_with_prefix_and_language(prefix, language):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для подсчета пользователей с заданными значениями prefix и language
@@ -7628,7 +7649,7 @@ def count_chats_with_prefix_and_language(prefix, language):
     return count
 
 def count_active_users_in_chats_with_prefix_and_language(prefix, language):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для выбора чатов с заданными значениями prefix и language
@@ -7661,7 +7682,7 @@ def ad_button_handler(message):
         bot.send_message(chat_id=user_id, text="Эта кнопка не работает!")
 
 def users_id_with_prefix_and_language(prefix, language):
-    conn = sqlite3.connect('database.db')
+    conn = connect_to_db('database.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для выбора чатов с заданными значениями prefix и language
@@ -7673,7 +7694,7 @@ def users_id_with_prefix_and_language(prefix, language):
     return user_ids
 
 def chats_id_with_prefix_and_language(prefix, language):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для выбора чатов с заданными значениями prefix и language
@@ -7685,7 +7706,7 @@ def chats_id_with_prefix_and_language(prefix, language):
     return chat_ids
 
 def ad_info_sotrud(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для получения данных по ad_id
@@ -7697,7 +7718,7 @@ def ad_info_sotrud(ad_id):
     return ad_info
 
 def get_photo_from_db(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Выполняем запрос к базе данных для получения данных по photo_id
@@ -7709,7 +7730,7 @@ def get_photo_from_db(ad_id):
     return photo_data
 
 def get_ad_with_max_send_count():
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Проверяем, есть ли записи в таблице
@@ -7834,7 +7855,7 @@ def remove_balance_command(message):
         bot.reply_to(message, "Неверный формат ad_id. Пожалуйста, укажите ad_id в числовом формате.")
 
 def remove_balance(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     try:
@@ -7849,7 +7870,7 @@ def remove_balance(ad_id):
         return False
 
 def add_balance(ad_id, amount, data):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     try:
@@ -7871,7 +7892,7 @@ def add_balance(ad_id, amount, data):
 
 # Функция для добавления рекламы в базу данных
 def add_ad_to_db(ad_id, send_count, nbutton1, tbutton1, nbutton2, tbutton2, nbutton3, tbutton3, ad_user, ad_group):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Добавление рекламы в базу данных
@@ -7883,7 +7904,7 @@ def add_ad_to_db(ad_id, send_count, nbutton1, tbutton1, nbutton2, tbutton2, nbut
 
 # Функция для обновления текста рекламы в базе данных
 def update_ad_chat_count(ad_id, group_count):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Обновление текста рекламы в базе данных
@@ -7894,7 +7915,7 @@ def update_ad_chat_count(ad_id, group_count):
 
 # Функция для обновления текста рекламы в базе данных
 def update_ad_user_count(ad_id, user_count):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Обновление текста рекламы в базе данных
@@ -7904,7 +7925,7 @@ def update_ad_user_count(ad_id, user_count):
     conn.close()
 
 def check_and_delete_ad(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Получаем текущее значение send_count
@@ -7923,7 +7944,7 @@ def check_and_delete_ad(ad_id):
         return False  # Возвращаем False, чтобы указать, что запись не была удалена
 
 def decrement_send_count(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Получаем текущее значение send_count
@@ -7946,7 +7967,7 @@ def decrement_send_count(ad_id):
 
 # Функция для обновления текста рекламы в базе данных
 def update_ad_text(ad_id, new_text):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Обновление текста рекламы в базе данных
@@ -8020,7 +8041,7 @@ def ad_info(message):
 
 # Функция для получения данных о рекламе из базы данных
 def get_ad_info_from_db(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Выполнение запроса к базе данных для получения данных по ad_id
@@ -8054,7 +8075,7 @@ def remove_ad_command(message):
         bot.reply_to(message, "Неверный формат ad_id. Пожалуйста, укажите ad_id в числовом формате.")
 
 def remove_ad(ad_id):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     try:
@@ -8091,7 +8112,7 @@ def add_ad(message):
 
 # Функция для сохранения фото с текстом в базу данных
 def save_photo_to_db(ad_id, file_id, file_path):
-    conn = sqlite3.connect('ad.db')
+    conn = connect_to_db('ad.db')
     cursor = conn.cursor()
 
     # Добавление фото с текстом в базу данных
@@ -8144,7 +8165,7 @@ def save_photo_to_directory(ad_id, file_id, file_path):
 
 def get_users_data():
     try:
-        connection = sqlite3.connect('database.db')
+        connection = connect_to_db('database.db')
         cursor = connection.cursor()
         cursor.execute("SELECT DISTINCT user_id, language FROM users")
         users_data = cursor.fetchall()
@@ -8157,7 +8178,7 @@ def get_users_data():
 
 def get_russian_texts():
     try:
-        connection = sqlite3.connect('chat_data.db')
+        connection = connect_to_db('chat_data.db')
         cursor = connection.cursor()
         cursor.execute("SELECT value FROM book")
         russian_texts = cursor.fetchall()
@@ -8170,7 +8191,7 @@ def get_russian_texts():
 
 def get_english_texts():
     try:
-        connection = sqlite3.connect('chat_data.db')
+        connection = connect_to_db('chat_data.db')
         cursor = connection.cursor()
         cursor.execute("SELECT value FROM book_en")
         english_texts = cursor.fetchall()
@@ -8223,7 +8244,7 @@ def send_advertisement_to_users():
 def send_advertisement_to_chats():
     try:
         # Открываем соединение с базой данных SQLite для чатов
-        connection_chats = sqlite3.connect('chat_data.db')
+        connection_chats = connect_to_db('chat_data.db')
         cursor_chats = connection_chats.cursor()
 
         # Получаем все чаты из базы данных
@@ -8267,7 +8288,7 @@ def send_advertisement_to_chats():
         print(f"Ошибка при выполнении SQL-запроса для чатов: {e}")
 
 def send_message_active_users():
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
 
     # Получаем список всех чатов
@@ -8310,7 +8331,7 @@ def send_message_active_users():
 def send_advertisement():
     try:
         # Открываем соединение с базой данных SQLite для чатов
-        connection_chats = sqlite3.connect('chat_data.db')
+        connection_chats = connect_to_db('chat_data.db')
         cursor_chats = connection_chats.cursor()
 
         # Получаем все чаты из базы данных
@@ -8350,7 +8371,7 @@ def send_advertisement():
 def update_active_users():
     try:
         # Подключение к базе данных
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
 
         # Получаем список всех чатов
@@ -8416,7 +8437,7 @@ def update_active_users():
 
 # Функция для удаления старых сообщений из базы данных
 def delete_old_messages():
-    conn = sqlite3.connect('messages.db')
+    conn = connect_to_db('messages.db')
     cursor = conn.cursor()
 
     # Получаем текущее время минус одна минута
@@ -8461,7 +8482,7 @@ schedule_thread.start()
 # Функция для получения creator_id на основе chat_id из таблицы creators
 def get_creator_id(chat_id):
     try:
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
         cursor.execute("SELECT creator_id, level_count FROM creators WHERE chat_id = ?", (chat_id,))
         result = cursor.fetchone()
@@ -8476,7 +8497,7 @@ def get_creator_id(chat_id):
 
 # Загрузка ключевых слов из базы данных
 def load_good_keywords():
-    conn = sqlite3.connect('good.db')
+    conn = connect_to_db('good.db')
     c = conn.cursor()
     c.execute('SELECT keyword FROM keywords')
     keywords = [row[0] for row in c.fetchall()]
@@ -8485,7 +8506,7 @@ def load_good_keywords():
 
 # Загрузка ключевых слов из базы данных
 def load_fuck_keywords():
-    conn = sqlite3.connect('fuck.db')
+    conn = connect_to_db('fuck.db')
     c = conn.cursor()
     c.execute('SELECT keyword FROM keywords')
     keywords = [row[0] for row in c.fetchall()]
@@ -8495,7 +8516,7 @@ def load_fuck_keywords():
     
 # Загрузка ключевых слов из базы данных
 def load_spam_keywords():
-    conn = sqlite3.connect('spam.db')
+    conn = connect_to_db('spam.db')
     c = conn.cursor()
     c.execute('SELECT keyword FROM keywords')
     keywords = [row[0] for row in c.fetchall()]
@@ -8504,7 +8525,7 @@ def load_spam_keywords():
 
 # Добавление нового ключевого слова в базу данных
 def add_spam_keyword(keyword_phrase):
-    conn = sqlite3.connect('spam.db')
+    conn = connect_to_db('spam.db')
     c = conn.cursor()
     c.execute('INSERT OR IGNORE INTO keywords (keyword) VALUES (?)', (keyword_phrase,))
     conn.commit()
@@ -8568,7 +8589,7 @@ def user_if_not_exists(cursor, chat_id, chat_name, user_id, user_username):
 
 # Функция для получения языка пользователя из базы данных
 def get_chat_language(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT language FROM chats WHERE chat_id=?", (chat_id,))
     language = cursor.fetchone()
@@ -8582,7 +8603,7 @@ def get_chat_language(chat_id):
 def update_total_warn_count(chat_id):
     try:
         # Подключаемся к базе данных SQLite
-        connection = sqlite3.connect('chat_data.db')
+        connection = connect_to_db('chat_data.db')
         cursor = connection.cursor()
 
         # Получаем всех пользователей с заданным chat_id
@@ -8605,7 +8626,7 @@ def update_total_warn_count(chat_id):
 def notification(user_username, chat_id, user_id, chat_name, language, text, text1, text2, duration1, duration2, duration3):
     try:
         # Подключаемся к базе данных SQLite для подсчета кликов
-        connection = sqlite3.connect('chat_data.db')
+        connection = connect_to_db('chat_data.db')
         cursor = connection.cursor()
 
         # Добавляем пользователя в базу данных, если его еще нет
@@ -8805,7 +8826,7 @@ def notification(user_username, chat_id, user_id, chat_name, language, text, tex
 
 # Функция для получения возможности заработка группы из базы данных
 def get_group_earn(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT earn FROM chats WHERE chat_id=?", (chat_id,))
     result = cursor.fetchone()
@@ -8821,7 +8842,7 @@ def get_group_earn(chat_id):
 
 
 def get_group_key(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT key FROM chats WHERE chat_id=?", (chat_id,))
     key = cursor.fetchone()[0]
@@ -8829,7 +8850,7 @@ def get_group_key(chat_id):
     return key
 
 def get_group_good_text(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT good_text FROM chats WHERE chat_id=?", (chat_id,))
     good_text = cursor.fetchone()[0]
@@ -8837,7 +8858,7 @@ def get_group_good_text(chat_id):
     return good_text
 
 def get_group_support(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT support, spam, fuck, flood, duration_spam1, duration_spam2, duration_spam3, duration_fuck1, duration_fuck2, duration_fuck3, duration_flood1, duration_flood2, duration_flood3, link FROM chats WHERE chat_id=?", (chat_id,))
     support_data = cursor.fetchone()  # Получаем одну строку с данными
@@ -8865,7 +8886,7 @@ def remove_emoji(text):
 
 
 def get_active_chat_recipient(chat_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT sender_id FROM active_chats WHERE recipient_id = ?''', (chat_id,))
     active_chat = cursor.fetchone()
@@ -8874,7 +8895,7 @@ def get_active_chat_recipient(chat_id):
     return active_chat[0] if active_chat else None
 
 def get_active_chat_sender(chat_id):
-    conn = sqlite3.connect('active_chats.db')
+    conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT recipient_id FROM active_chats WHERE sender_id = ?''', (chat_id,))
     active_chat = cursor.fetchone()
@@ -8884,7 +8905,7 @@ def get_active_chat_sender(chat_id):
 
 # Создание базы данных и таблицы, если они не существуют
 def create_spam_db():
-    conn = sqlite3.connect('spam.db')
+    conn = connect_to_db('spam.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS keywords (
                     id INTEGER PRIMARY KEY,
@@ -8901,7 +8922,7 @@ def save_message(chat_id, message_id):
 # Функция для фактического сохранения идентификатора сообщения в базу данных
 def _save_message(chat_id, message_id):
     # Создаем новое соединение с базой данных
-    with sqlite3.connect("messages.db") as conn:
+    with connect_to_db("messages.db") as conn:
         # Создаем курсор для выполнения запросов
         cursor = conn.cursor()
         # Выполняем SQL-запрос для вставки идентификатора сообщения
@@ -8911,7 +8932,7 @@ def _save_message(chat_id, message_id):
 
 # Функция для получения языка пользователя из базы данных
 def get_user_mod(chat_id, user_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT chat_name, user_username FROM users WHERE user_id=? AND chat_id=?", (user_id, chat_id))
     user_mod = cursor.fetchone()
@@ -8927,7 +8948,7 @@ def send_mod_notification(chat_id, user_id, duration_flood1, duration_flood2, du
         text = data['notification_text'][language]['flood']
         text1 = data['notification_text'][language]['mute']
         text2 = data['notification_text'][language]['delete']
-        connection = sqlite3.connect('chat_data.db')
+        connection = connect_to_db('chat_data.db')
         cursor = connection.cursor()
         # Добавляем пользователя в базу данных, если его еще нет
         user_if_not_exists(cursor, chat_id, chat_name, user_id, user_username)
@@ -8964,7 +8985,7 @@ def mod_message_more(chat_id, message_id, user_id, message_text, duration_flood1
     executor.submit(_mod_message_more, chat_id, message_id, user_id, message_text, duration_flood1, duration_flood2, duration_flood3)
 
 def _mod_message_more(chat_id, message_id, user_id, message_text, duration_flood1, duration_flood2, duration_flood3):
-    conn = sqlite3.connect('messages.db')
+    conn = connect_to_db('messages.db')
     cursor = conn.cursor()
 
     print("Starting mod_message_more function")
@@ -9020,7 +9041,7 @@ def save_last_message(chat_id, message_id, user_id, message_text):
     executor.submit(_save_last_message, chat_id, message_id, user_id, message_text)
 
 def _save_last_message(chat_id, message_id, user_id, message_text):
-    conn = sqlite3.connect('messages.db')
+    conn = connect_to_db('messages.db')
     cursor = conn.cursor()
     
     # Создание таблицы, если она еще не существует
@@ -9035,7 +9056,7 @@ def _save_last_message(chat_id, message_id, user_id, message_text):
 
 def update_chat_data(chat_id, chat_name, user_id, user_username):
     try:
-        connection = sqlite3.connect('chat_data.db')
+        connection = connect_to_db('chat_data.db')
         cursor = connection.cursor()
 
         # Проверяем, изменилось ли имя чата
@@ -9244,7 +9265,7 @@ def handle_group_message(message):
 
 # Функция для получения grand_count пользователя из базы данных по chat_id
 def get_admin_grand_count(chat_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT grand_count FROM chats WHERE chat_id = ?", (chat_id,))
     grand_count = cursor.fetchone()
@@ -9257,7 +9278,7 @@ def get_admin_grand_count(chat_id):
 
 # Функция для получения языка пользователя из базы данных
 def get_warn_count(chat_id, user_id):
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute("SELECT warn_count FROM users WHERE chat_id=? AND user_id=?", (chat_id, user_id))
     warn_count = cursor.fetchone()
@@ -9575,7 +9596,7 @@ def process_group_message_nogrand(chat_id, chat_name, user_id, user_username, me
     
     try:
         # Подключение к базе данных
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
         # Создание таблицы пользователей, если ее нет
         create_users_table(cursor)
@@ -9634,7 +9655,7 @@ def process_group_message(chat_id, chat_name, user_id, creator_id, level_count, 
     
     try:
         # Подключение к базе данных
-        conn = sqlite3.connect('chat_data.db')
+        conn = connect_to_db('chat_data.db')
         cursor = conn.cursor()
 
         # Создание таблицы пользователей, если ее нет
@@ -9692,7 +9713,7 @@ def process_group_message(chat_id, chat_name, user_id, creator_id, level_count, 
 
 # Функция для создания подключения к базе данных SQLite и создания таблиц, если их еще нет
 def create_connection():
-    conn = sqlite3.connect('chat_data.db')
+    conn = connect_to_db('chat_data.db')
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS chats
                    (chat_id INTEGER PRIMARY KEY, 
@@ -9832,7 +9853,7 @@ def add_creator_to_db(cursor, conn, creator_id, creator_username, chat_id, chat_
 # Функция для получения языка создателя по его идентификатору
 def get_creator_language(creator_id):
     # Подключение к базе данных database.db
-    conn_db = sqlite3.connect('database.db')
+    conn_db = connect_to_db('database.db')
     cursor_db = conn_db.cursor()
     
     cursor_db.execute("SELECT language FROM users WHERE user_id=?", (creator_id,))
@@ -9846,7 +9867,7 @@ def get_creator_language(creator_id):
 
 def get_creator_prefix(creator_id):
     # Подключение к базе данных database.db
-    conn_db = sqlite3.connect('database.db')
+    conn_db = connect_to_db('database.db')
     cursor_db = conn_db.cursor()
     
     cursor_db.execute("SELECT prefix FROM users WHERE user_id=?", (creator_id,))
