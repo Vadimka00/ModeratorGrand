@@ -1938,22 +1938,13 @@ def read_good_keywords(message):
 # Обработчик STAFF команд - конец
 
 # Обработчик STAFF кнопки база - начало
-def create_keyboard_staff(total_users_count, total_chats_count):
+def create_keyboard_staff():
     keyboard = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
-    users_button = types.KeyboardButton(f"🙎 ({total_users_count})")
-    chats_button = types.KeyboardButton(f"🗂 ({total_chats_count})")
+    users_button = types.KeyboardButton(f"🙎")
+    chats_button = types.KeyboardButton(f"🗂")
     back_button = types.KeyboardButton(f"⬅️")
     keyboard.add(users_button, chats_button, back_button)
     return keyboard
-
-def get_total_users_count():
-    connection_users = sqlite3.connect('database.db')
-    cursor_users = connection_users.cursor()
-    cursor_users.execute("SELECT COUNT(*) FROM users")
-    total_users_count = cursor_users.fetchone()[0]
-    return total_users_count
-
-total_users_count = get_total_users_count()
 
 
 @bot.message_handler(func=lambda message: message.text == '⬅️')
@@ -1965,7 +1956,7 @@ def back_handler(message):
     send_buttons(chat_id, language, text, user_id)
 
 
-@bot.message_handler(func=lambda message: message.text == f'🙎 ({total_users_count})')
+@bot.message_handler(func=lambda message: message.text == f'🙎')
 def users_handler(message):
     if message.from_user.id in allowed_users:
         connection_users = sqlite3.connect('database.db')
@@ -2017,16 +2008,8 @@ def users_handler(message):
     else:
         bot.send_message(message.chat.id, "Функционал недоступен")        
 
-def get_total_chats_count():
-    connection_chats = sqlite3.connect('chat_data.db')
-    cursor_chats = connection_chats.cursor()
-    cursor_chats.execute("SELECT COUNT(*) FROM chats")
-    total_chats_count = cursor_chats.fetchone()[0]
-    return total_chats_count
 
-total_chats_count = get_total_chats_count()
-
-@bot.message_handler(func=lambda message: message.text == f'🗂 ({total_chats_count})')
+@bot.message_handler(func=lambda message: message.text == f'🗂')
 def chats_handler(message):
     if message.from_user.id in allowed_users:
         connection_chats = sqlite3.connect('chat_data.db')
@@ -2104,8 +2087,8 @@ def base_handler(message):
                 cursor_chats.execute("SELECT COUNT(*) FROM chats")
                 total_chats_count = cursor_chats.fetchone()[0]
 
-                users_info_chunk = f"Выбери базу:\n"
-                staff = create_keyboard_staff(total_users_count, total_chats_count)
+                users_info_chunk = f"Выбери базу:\nКол-во пользователей: {total_users_count}\nКол-во групп: {total_chats_count}"
+                staff = create_keyboard_staff()
                 bot.send_message(message.chat.id, users_info_chunk, reply_markup=staff,parse_mode="HTML")
             except sqlite3.Error as e:
                 print(f"Ошибка при выполнении SQL-запроса для чатов: {e}")
@@ -8455,8 +8438,6 @@ def delete_old_messages():
 # Функция для запуска планировщика задач в отдельном потоке
 def schedule_task():
     # Планируем рассылку рекламных сообщений и обновление пользователей
-    schedule.every(1).seconds.do(get_total_users_count)
-    schedule.every(1).seconds.do(get_total_chats_count)
     schedule.every(1).seconds.do(check_expired_users)
     schedule.every(1).seconds.do(delete_old_messages)
     schedule.every().wednesday.at("18:00").do(send_advertisement)
