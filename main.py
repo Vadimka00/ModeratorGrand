@@ -6661,8 +6661,7 @@ def increment_like_count(recipient_id):
     conn.commit()
     conn.close()
 
-def send_new_buttons_recipient(language, recipient_id):
-    chat_id = recipient_id
+def send_new_buttons_recipient(language, chat_id):
     connection, cursor, user = initialize_database(chat_id)
     prefix = user[2]
     keyboard = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
@@ -6958,6 +6957,7 @@ def cancel_buttons_handler(message):
             recipient_id_to = get_recipient_to(sender_id_to)
             rk_keyboard = rank_keyboard()
             language = "rus"
+            lk_keyboard = send_new_buttons_recipient(language, recipient_id)
             sender_keyboard = send_new_buttons_sender_id_to(language_user, sender_id_to)
             recipient_keyboard = send_new_buttons_sender_id_to(language, recipient_id_to)
         if sender_id: # сотрудник
