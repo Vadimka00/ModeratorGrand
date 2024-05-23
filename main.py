@@ -6661,7 +6661,8 @@ def increment_like_count(recipient_id):
     conn.commit()
     conn.close()
 
-def send_new_buttons_recipient(language, chat_id):
+def send_new_buttons_recipient(language, recipient_id):
+    chat_id = recipient_id
     connection, cursor, user = initialize_database(chat_id)
     prefix = user[2]
     keyboard = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
@@ -6956,8 +6957,9 @@ def cancel_buttons_handler(message):
             language_sender = get_sender_language(sender_id)
             recipient_id_to = get_recipient_to(sender_id_to)
             rk_keyboard = rank_keyboard()
+            language = "rus"
             sender_keyboard = send_new_buttons_sender_id_to(language_user, sender_id_to)
-            recipient_keyboard = send_new_buttons_sender_id_to(language_user, recipient_id_to)
+            recipient_keyboard = send_new_buttons_sender_id_to(language, recipient_id_to)
         if sender_id: # сотрудник
             if language_sender == "rus":
                 bot.send_message(sender_id, "Технический специалист завершил чат с тобой. Пожалуйста, оцените качество помощи! 🛠️", reply_markup=rk_keyboard)
