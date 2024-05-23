@@ -6206,7 +6206,10 @@ def send_message_callback(call):
     try:
         language_user = "en"
         sender_id = call.message.chat.id
+        username = username = call.from_user.username or call.from_user.first_name
+        fq = call.message.text
         new_keyboard = send_new_buttons(language_user, sender_id)
+        text = f"🇺🇸 @{username} ({sender_id})\n\n{fq}"
         # Редактирование сообщения с кнопкой "Отправить" на сообщение "Отправлено, ожидайте"
         bot.edit_message_text("Your message has been sent.📬 Our team will contact you shortly.👨‍💻", call.message.chat.id, call.message.message_id)
         bot.send_message(sender_id, "Request in queue", reply_markup=new_keyboard)
@@ -6216,7 +6219,7 @@ def send_message_callback(call):
         keyboard.row(InlineKeyboardButton("Reject ❌", callback_data=f'reject_{call.message.message_id}'),
                      InlineKeyboardButton("Accept ✅", callback_data=f'accept_{call.message.message_id}'))
 
-        bot.send_message(-1002130493902, call.message.text, reply_markup=keyboard)
+        bot.send_message(-1002130493902, text=text)
 
         # Запись данных в базу данных
         save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, language="en")
@@ -6241,7 +6244,10 @@ def send_message_callback(call):
     try:
         language_user = "rus"
         sender_id = call.message.chat.id
+        username = username = call.from_user.username or call.from_user.first_name
+        fq = call.message.text
         new_keyboard = send_new_buttons(language_user, sender_id)
+        text = f"🇷🇺 @{username} ({sender_id})\n\n{fq}"
         # Редактирование сообщения с кнопкой "Отправить" на сообщение "Отправлено, ожидайте"
         bot.edit_message_text("Твоё сообщение отправлено.📬 Наша команда свяжется с тобой в ближайшее время.👨‍💻", call.message.chat.id, call.message.message_id)
         bot.send_message(sender_id, "Запрос в очереди", reply_markup=new_keyboard)
@@ -6251,7 +6257,7 @@ def send_message_callback(call):
         keyboard.row(InlineKeyboardButton("Отклонить ❌", callback_data=f'reject_{call.message.message_id}'),
                      InlineKeyboardButton("Принять ✅", callback_data=f'accept_{call.message.message_id}'))
 
-        bot.send_message(-1002130493902, call.message.text, reply_markup=keyboard)
+        bot.send_message(-1002130493902, text=text)
 
         # Запись данных в базу данных
         save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, language="rus")
@@ -9113,8 +9119,6 @@ def handle_group_message(message):
             bot.send_message(sender_id, message.text)
         elif recipient_id:
             bot.send_message(recipient_id, message.text)
-        else:
-            return
 
         user_language = get_user_language(chat_id)
         # Если чат приватный и сообщение содержит знак вопроса, отправляем сообщение пользователю и завершаем выполнение функции
