@@ -6957,7 +6957,6 @@ def cancel_buttons_handler(message):
             recipient_id_to = get_recipient_to(sender_id_to)
             rk_keyboard = rank_keyboard()
             language = "rus"
-            lk_keyboard = send_new_buttons_recipient(language, recipient_id)
             sender_keyboard = send_new_buttons_sender_id_to(language_user, sender_id_to)
             recipient_keyboard = send_new_buttons_sender_id_to(language, recipient_id_to)
         if sender_id: # сотрудник
