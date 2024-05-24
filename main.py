@@ -6183,17 +6183,52 @@ def process_edited_message(message, language_user, sender_id):
         
 
 
+def modify_db_schema(db_name):
+    try:
+        conn = connect_to_db(db_name)
+        cursor = conn.cursor()
+        
+        # Создание новой таблицы без уникального ограничения на поле sender_id
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS active_chat_new (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_id INTEGER,
+            message_id INTEGER,
+            recipient_id TEXT,
+            message TEXT,
+            language TEXT
+        );
+        ''')
+        
+        # Копирование данных из старой таблицы в новую
+        cursor.execute('''
+        INSERT INTO active_chat_new (sender_id, message_id, recipient_id, message, language)
+        SELECT sender_id, message_id, recipient_id, message, language FROM active_chat;
+        ''')
 
+        # Удаление старой таблицы
+        cursor.execute('DROP TABLE active_chat;')
 
+        # Переименование новой таблицы в старое имя
+        cursor.execute('ALTER TABLE active_chat_new RENAME TO active_chat;')
 
+        conn.commit()
+        conn.close()
+        logging.info("Database schema modified successfully.")
 
+    except Exception as e:
+        logging.error(f"Error modifying database schema: {e}")
+
+modify_db_schema('active_chats.db')
 
 def save_to_database(sender_id, message_id, message, language, recipient_id):
     conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
-    cursor.execute('''INSERT INTO active_chats (sender_id, message_id, recipient_id, message, language) VALUES (?, ?, ?, ?, ?)''', (sender_id, message_id, recipient_id, message, language))
+    cursor.execute('''INSERT INTO active_chat (sender_id, message_id, recipient_id, message, language) VALUES (?, ?, ?, ?, ?)''', 
+                   (sender_id, message_id, recipient_id, message, language))
     conn.commit()
     conn.close()
+
 
 @bot.callback_query_handler(func=lambda call: call.data == 'send_message_en')
 def send_message_callback(call):
