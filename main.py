@@ -6194,7 +6194,7 @@ def process_edited_message(message, language_user, sender_id):
 
 
 
-def save_to_database(sender_id, message_id, message, language, recipient_id=None):
+def save_to_database(sender_id, message_id, message, language, recipient_id):
     conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO active_chats (sender_id, message_id, recipient_id, message, language) VALUES (?, ?, ?, ?, ?)''', (sender_id, message_id, recipient_id, message, language))
@@ -6206,7 +6206,7 @@ def send_message_callback(call):
     try:
         language_user = "en"
         sender_id = call.message.chat.id
-        username = username = call.from_user.username or call.from_user.first_name
+        username = call.from_user.username or call.from_user.first_name
         fq = call.message.text
         new_keyboard = send_new_buttons(language_user, sender_id)
         text = f"🇺🇸 @{username} ({sender_id})\n\n{fq}"
@@ -6222,7 +6222,7 @@ def send_message_callback(call):
         bot.send_message(-1002130493902, text=text)
 
         # Запись данных в базу данных
-        save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, language="en")
+        save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, recipient_id=username, language="en")
 
     except Exception as e:
         error_message = (
@@ -6260,7 +6260,7 @@ def send_message_callback(call):
         bot.send_message(-1002130493902, text=text)
 
         # Запись данных в базу данных
-        save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, language="rus")
+        save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, recipient_id=username, language="rus")
 
     except Exception as e:
         error_message = (
@@ -6306,6 +6306,7 @@ def reject_callback(call):
         # Получаем message_id из callback_data
         message_id = int(call.data.split('_')[1])
         support_id = call.from_user.id
+        username = call.from_user.username or call.from_user.first_name
         support_data = get_support_entry(support_id)
         # Проверяем существует ли запись с данным message_id
         conn = connect_to_db('active_chats.db')
@@ -6315,42 +6316,35 @@ def reject_callback(call):
         conn.close()
 
 
-        if existing_entry:
-            # Отправляем предыдущему получателю сообщение о завершении разговора
-            bot.send_message(call.from_user.id, "Завершите прошлый разговор.")
 
-        else:
+        # Получаем sender_id из базы данных по message_id
+        conn = connect_to_db('active_chats.db')
+        cursor = conn.cursor()
+        cursor.execute('''SELECT sender_id, message, language, recipient_id FROM active_chats WHERE message_id = ?''', (message_id,))
+        result = cursor.fetchone()
+        conn.close()
 
-            conn = connect_to_db('active_chats.db')
-            cursor = conn.cursor()
-            cursor.execute('''UPDATE active_chats SET recipient_id = ? WHERE message_id = ?''', (call.from_user.id, message_id))
-            conn.commit()
-            conn.close()
-
-            # Получаем sender_id из базы данных по message_id
-            conn = connect_to_db('active_chats.db')
-            cursor = conn.cursor()
-            cursor.execute('''SELECT sender_id, message, language FROM active_chats WHERE message_id = ?''', (message_id,))
-            result = cursor.fetchone()
-            conn.close()
-
-            if result:
+        if result:
                 sender_id = result[0]
                 text = result[1]
                 language = result[2]
+                recipient_id = result[3]
                 rej_keyboard = reject_keyboard()
-
-                # Отправляем сообщение об отмене запроса
                 if language == "rus":
-                    bot.send_message(call.from_user.id, f"⛔️ Ты отменил(а) запрос.\n\n \"{text}\"", reply_markup=rej_keyboard)
+                    lan = "🇷🇺"
                 else:
-                    bot.send_message(call.from_user.id, f"⛔️ Ты отменил(а) запрос на английском языке.\n\n \"{text}\"", reply_markup=rej_keyboard)
+                    lan = "🇺🇸"
+                # Отправляем сообщение об отмене запроса
+                edit_text = f"{lan} @{recipient_id} ({sender_id})\n\n{text}\n\n🛠️ Запрос отклонил(а) @{username}!"
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=edit_text)
 
-                # Удаляем сообщение из чата, где была нажата кнопка "Принять"
-                bot.delete_message(call.message.chat.id, call.message.message_id)
+                conn = connect_to_db('active_chats.db')
+                cursor = conn.cursor()
+                cursor.execute('''DELETE FROM active_chats WHERE sender_id = ?''', (sender_id,))
+                conn.commit()
+                conn.close()
 
-
-            else:
+        else:
                 bot.send_message(call.from_user.id, "Не удалось найти сообщение с таким идентификатором")
 
     except Exception as e:
@@ -6543,6 +6537,7 @@ def accept_callback(call):
         message_id = int(call.data.split('_')[1])
         support_id = call.from_user.id
         support_data = get_support_entry(support_id)
+        username = call.from_user.username or call.from_user.first_name
 
         # Проверяем существует ли запись с данным message_id
         conn = connect_to_db('active_chats.db')
@@ -6552,59 +6547,41 @@ def accept_callback(call):
         conn.close()
 
 
-        if existing_entry:
-            # Отправляем предыдущему получателю сообщение о завершении разговора
-            bot.send_message(call.from_user.id, "Заверши прошлый разговор.")
-        else:
-            # Теперь обновляем запись
-            conn = connect_to_db('active_chats.db')
-            cursor = conn.cursor()
-            cursor.execute('''UPDATE active_chats SET recipient_id = ? WHERE message_id = ?''', (call.from_user.id, message_id))
-            conn.commit()
-            conn.close()
 
-                # Прерываем выполнение оставшейся части кода
 
-            # Если запись не существует, продолжаем выполнение кода
+        # Получаем sender_id из базы данных по message_id
+        conn = connect_to_db('active_chats.db')
+        cursor = conn.cursor()
+        cursor.execute('''SELECT sender_id, message, language, recipient_id FROM active_chats WHERE message_id = ?''', (message_id,))
+        result = cursor.fetchone()
+        conn.close()
 
-            # Устанавливаем recipient_id в базе данных
-            conn = connect_to_db('active_chats.db')
-            cursor = conn.cursor()
-            cursor.execute('''UPDATE active_chats SET recipient_id = ? WHERE message_id = ?''', (call.from_user.id, message_id))
-            conn.commit()
-            conn.close()
-
-            # Получаем sender_id из базы данных по message_id
-            conn = connect_to_db('active_chats.db')
-            cursor = conn.cursor()
-            cursor.execute('''SELECT sender_id, message, recipient_id, language FROM active_chats WHERE message_id = ?''', (message_id,))
-            result = cursor.fetchone()
-            conn.close()
-
-            if result:
+        if result:
                 sender_id = result[0]
                 text = result[1]
-                recipient_id = result[2]
-                language_user = result[3]
+                recipient_id = result[3]
+                language_user = result[2]
                 support = support_data[0]
                 sup_name = support_data[1]
                 sup_balance = support_data[2]
                 like = support_data[3]
                 dislike = support_data[4]
                 code = support_data[5]
+                if language_user == "rus":
+                    lan = "🇷🇺"
+                else:
+                    lan = "🇺🇸"
                 # Отправляем сообщение с данными в личку отправителю
                 keyboard_sender = create_keyboard_sender(language_user)
                 if language_user == "rus":
-                    bot.send_message(sender_id, f"🛠️ Твой запрос приняли! Теперь чат в режиме технической поддержки! 🛠️\n\nКод специалиста:  [{code}]\nРейтинг специалиста: [👎{dislike}] [👍{like}]", reply_markup=keyboard_sender)
-                else:
-                    bot.send_message(sender_id, f"🛠️ Your request has been accepted! The chat is now in tech support mode! 🛠️\n\nSpecialist Code:  [{code}]\nSpecialist Rating: [👎{dislike}] [👍{like}]", reply_markup=keyboard_sender)
+                    bot.send_message(sender_id, f"🛠️ Твой запрос приняли! Специалист: @{username}")
+                else: 
+                    bot.send_message(sender_id, f"🛠️ Your request has been accepted! Specialist: @{username}")
                 keyboard_recipient = create_keyboard_recipient()
-                bot.send_message(recipient_id, f"🛠️ Ты принял(а) запрос {sender_id}! Теперь чат в режиме технической поддержки! 🛠️\n\n\"{text}\"", reply_markup=keyboard_recipient)
+                edit_text = f"{lan} @{recipient_id} ({sender_id})\n\n{text}\n\n🛠️ Запрос принял(а) @{username}!"
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=edit_text)
 
-                # Удаляем сообщение из чата, где была нажата кнопка "Принять"
-                bot.delete_message(call.message.chat.id, call.message.message_id)
-
-            else:
+        else:
                 bot.send_message(call.from_user.id, "Не удалось найти сообщение с таким идентификатором")
 
     except Exception as e:
@@ -9115,11 +9092,6 @@ def handle_group_message(message):
         chat_id = message.from_user.id
         sender_id = get_active_chat_sender(chat_id)
         recipient_id = get_active_chat_recipient(chat_id)
-        if sender_id:
-            bot.send_message(sender_id, message.text)
-        elif recipient_id:
-            bot.send_message(recipient_id, message.text)
-
         user_language = get_user_language(chat_id)
         # Если чат приватный и сообщение содержит знак вопроса, отправляем сообщение пользователю и завершаем выполнение функции
         if '?' in message.text:
