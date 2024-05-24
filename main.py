@@ -6207,10 +6207,10 @@ def modify_db_schema(db_name):
         ''')
 
         # Удаление старой таблицы
-        cursor.execute('DROP TABLE active_chat;')
+        cursor.execute('DROP TABLE active_chats;')
 
         # Переименование новой таблицы в старое имя
-        cursor.execute('ALTER TABLE active_chat_new RENAME TO active_chat;')
+        cursor.execute('ALTER TABLE active_chat_new RENAME TO active_chats;')
 
         conn.commit()
         conn.close()
@@ -6224,7 +6224,7 @@ modify_db_schema('active_chats.db')
 def save_to_database(sender_id, message_id, message, language, recipient_id):
     conn = connect_to_db('active_chats.db')
     cursor = conn.cursor()
-    cursor.execute('''INSERT INTO active_chat (sender_id, message_id, recipient_id, message, language) VALUES (?, ?, ?, ?, ?)''', 
+    cursor.execute('''INSERT INTO active_chats (sender_id, message_id, recipient_id, message, language) VALUES (?, ?, ?, ?, ?)''', 
                    (sender_id, message_id, recipient_id, message, language))
     conn.commit()
     conn.close()
