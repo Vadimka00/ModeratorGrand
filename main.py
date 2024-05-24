@@ -6053,12 +6053,6 @@ def support_buttons_handler(message):
                 else:
                      block_message = f"Для тебя функция недоступна до {formatted_block_time}."                   
                 bot.send_message(chat_id, block_message)
-            elif active_chat:
-                if user_language == "en":
-                    active_message = f"You have already sent an enquiry, expect to be contacted by an expert!"
-                else:
-                     active_message = f"Ты уже отправил запрос, ожидай связи со специалистом!"                   
-                bot.send_message(chat_id, active_message)
             else:
                 # Пользователь не заблокирован
                 if user_language == "en":
