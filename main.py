@@ -6203,7 +6203,7 @@ def modify_db_schema(db_name):
         # Копирование данных из старой таблицы в новую
         cursor.execute('''
         INSERT INTO active_chat_new (sender_id, message_id, recipient_id, message, language)
-        SELECT sender_id, message_id, recipient_id, message, language FROM active_chat;
+        SELECT sender_id, message_id, recipient_id, message, language FROM active_chats;
         ''')
 
         # Удаление старой таблицы
