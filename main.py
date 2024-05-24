@@ -6219,7 +6219,7 @@ def send_message_callback(call):
         keyboard.row(InlineKeyboardButton("Reject ❌", callback_data=f'reject_{call.message.message_id}'),
                      InlineKeyboardButton("Accept ✅", callback_data=f'accept_{call.message.message_id}'))
 
-        bot.send_message(-1002130493902, text=text)
+        bot.send_message(-1002130493902, text=text, reply_markup=keyboard)
 
         # Запись данных в базу данных
         save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, recipient_id=username, language="en")
@@ -6257,7 +6257,7 @@ def send_message_callback(call):
         keyboard.row(InlineKeyboardButton("Отклонить ❌", callback_data=f'reject_{call.message.message_id}'),
                      InlineKeyboardButton("Принять ✅", callback_data=f'accept_{call.message.message_id}'))
 
-        bot.send_message(-1002130493902, text=text)
+        bot.send_message(-1002130493902, text=text, reply_markup=keyboard)
 
         # Запись данных в базу данных
         save_to_database(call.message.chat.id, call.message.message_id, message=call.message.text, recipient_id=username, language="rus")
