@@ -2006,19 +2006,20 @@ def users_handler(message):
                         pref_text = "◽️"
                     users_info_text += f"[<code>{user_id}</code> {lang_text} {pref_text}]   "
                 return users_info_text.strip()
-            rus_users_info_text = format_users_info(rus_users_info)
-            if len(rus_users_info_text) <= 4096:
-                bot.send_message(message.chat.id, rus_users_info_text, parse_mode="HTML")
-            else:
-                bot.send_message(message.chat.id, rus_users_info_text[:4096], parse_mode="HTML")
-                bot.send_message(message.chat.id, rus_users_info_text[4096:], parse_mode="HTML")
 
-            en_users_info_text = format_users_info(en_users_info)
-            if len(en_users_info_text) <= 4096:
-                bot.send_message(message.chat.id, en_users_info_text, parse_mode="HTML")
-            else:
-                bot.send_message(message.chat.id, en_users_info_text[:4096], parse_mode="HTML")
-                bot.send_message(message.chat.id, en_users_info_text[4096:], parse_mode="HTML")
+            def send_users_info(chat_id, users_info_text):
+                for i in range(0, len(users_info_text), 4096):
+                    bot.send_message(chat_id, users_info_text[i:i + 4096], parse_mode="HTML")
+
+            def send_users_in_batches(chat_id, users_info, batch_size=40):
+                for i in range(0, len(users_info), batch_size):
+                    batch = users_info[i:i + batch_size]
+                    users_info_text = format_users_info(batch)
+                    send_users_info(chat_id, users_info_text)
+                    time.sleep(3)  # Задержка 3 секунды
+
+            send_users_in_batches(message.chat.id, rus_users_info)
+            send_users_in_batches(message.chat.id, en_users_info)
 
         except sqlite3.Error as e:
             print(f"Ошибка при выполнении SQL-запроса для пользователей: {e}")
@@ -2027,7 +2028,7 @@ def users_handler(message):
             cursor_users.close()
             connection_users.close()
     else:
-        bot.send_message(message.chat.id, "Функционал недоступен")        
+        bot.send_message(message.chat.id, "Функционал недоступен")  
 
 
 @bot.message_handler(func=lambda message: message.text == f'🗂')
@@ -2059,20 +2060,20 @@ def chats_handler(message):
                         pref_text = "◽️"
                     chats_info_text += f"[<code>{chat_id}</code> {lang_text} {pref_text} {round(bonus_count, 2)} ({grand_count})]\n"
                 return chats_info_text
-            
-            rus_chats_info_text = format_chats_info(rus_chats_info)
-            if len(rus_chats_info_text) <= 4096:
-                bot.send_message(message.chat.id, rus_chats_info_text, parse_mode="HTML")
-            else:
-                bot.send_message(message.chat.id, rus_chats_info_text[:4096], parse_mode="HTML")
-                bot.send_message(message.chat.id, rus_chats_info_text[4096:], parse_mode="HTML")
 
-            en_chats_info_text = format_chats_info(en_chats_info)
-            if len(en_chats_info_text) <= 4096:
-                bot.send_message(message.chat.id, en_chats_info_text, parse_mode="HTML")
-            else:
-                bot.send_message(message.chat.id, en_chats_info_text[:4096], parse_mode="HTML")
-                bot.send_message(message.chat.id, en_chats_info_text[4096:], parse_mode="HTML")
+            def send_chats_info(chat_id, chats_info_text):
+                for i in range(0, len(chats_info_text), 4096):
+                    bot.send_message(chat_id, chats_info_text[i:i + 4096], parse_mode="HTML")
+
+            def send_chats_in_batches(chat_id, chats_info, batch_size=40):
+                for i in range(0, len(chats_info), batch_size):
+                    batch = chats_info[i:i + batch_size]
+                    chats_info_text = format_chats_info(batch)
+                    send_chats_info(chat_id, chats_info_text)
+                    time.sleep(3)  # Задержка 3 секунды
+
+            send_chats_in_batches(message.chat.id, rus_chats_info)
+            send_chats_in_batches(message.chat.id, en_chats_info)
 
         except sqlite3.Error as e:
             print(f"Ошибка при выполнении SQL-запроса для чатов: {e}")
@@ -2080,6 +2081,8 @@ def chats_handler(message):
         finally:
             cursor_chats.close()
             connection_chats.close()
+    else:
+        bot.send_message(message.chat.id, "Функционал недоступен")
 
 
 @bot.message_handler(func=lambda message: message.text == '🌐 База')
@@ -9241,7 +9244,7 @@ def get_admin_grand_count(chat_id):
     conn.close()
     # Если grand_count не найден, устанавливаем значение по умолчанию '1'
     if grand_count is None:
-        return '1'
+        return '1.0'
     else:
         return grand_count[0]
 
@@ -9540,7 +9543,7 @@ def update_chat_info(cursor, chat_id, words_count, user_id, level_count):
                               bonus_count = bonus_count + ?
                           WHERE chat_id = ?''', (words_count, words_count * bonus_coefficient, chat_id))
         
-        print(f"Пополнение {chat_id}. Слов: {words_count}, Написал: {user_role}, Бонус коэф: {bonus_coefficient}, {grand_count}")
+        print(f"Пополнение {chat_id}. Слов: {words_count}, Написал: {user_role} ({user_id}), Бонус коэф: {bonus_coefficient}, {grand_count}")
     except Exception as e:
         error_message = (
             f"⚠️ Произошла ошибка при обновлении статистики чата:\n"
@@ -9743,7 +9746,7 @@ def add_chat_to_db(cursor, conn, chat_id, chat_name, creator_id, creator_usernam
         return False
 
     try:
-        cursor.execute("INSERT INTO chats VALUES (?, ?, ?, ?, ?, 0, 0, 0, 0, 0, 0, 0, 0, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO chats VALUES (?, ?, ?, ?, ?, 0, 0, 0, 0, 0, 0, 0, 0, ?, ?, ?, 1.0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                        (chat_id, chat_name, creator_id, creator_username, language, earn, hi_text, good_text, support, spam, fuck, flood, duration_spam1, duration_spam2, duration_spam3, duration_fuck1, duration_fuck2, duration_fuck3, duration_flood1, duration_flood2, duration_flood3, link, key, prefix))
         conn.commit()
         return True
@@ -9900,6 +9903,7 @@ def welcome_message(message):
                 if member.is_bot:
                     # Если добавленный пользователь - бот, выполняем код приветствия и добавления информации о чате в базу данных
                     print("Бот был добавлен в чат")
+                    bot.send_message(1858164732, text=f"бот был добавлен в {chat_id}")
 
                     # Проверяем, есть ли чат уже в базе данных
                     cursor.execute("SELECT * FROM chats WHERE chat_id=?", (chat_id,))
@@ -9910,6 +9914,7 @@ def welcome_message(message):
                         print("Чат успешно добавлен в базу данных")
                     else:
                         print("Чат уже существует в базе данных")
+                        bot.send_message(1858164732, text=f"бота пытались добавить ещё раз в {chat_id}")
 
                     # Проверяем, активирован ли уже бот в чате
                     cursor.execute("SELECT * FROM active_chats WHERE chat_id=?", (chat_id,))
@@ -9979,6 +9984,7 @@ def welcome_message(message):
                         )
                         # Используйте библиотеку logging для записи сообщения об ошибке
                         logging.error(error_message)
+                        bot.send_message(1858164732, text=error_message)
             except Exception as e:
                 error_message = (
                     f"⚠️ Произошла ошибка при Добавлении бота в чат:\n"
@@ -9994,7 +10000,7 @@ def welcome_message(message):
                 )
                 # Используйте библиотеку logging для записи сообщения об ошибке
                 logging.error(error_message)
-                
+                bot.send_message(1858164732, text=error_message)
                 bot.send_message(chat_id, "⚠️ Произошла ошибка при добавлении. Пожалуйста, напишите @VadimBussS и опишите проблему.") 
 
                     
