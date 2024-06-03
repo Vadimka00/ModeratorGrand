@@ -9277,7 +9277,7 @@ def get_admin_grand_count(chat_id):
     conn.close()
     # Если grand_count не найден, устанавливаем значение по умолчанию '1'
     if grand_count is None:
-        return '1'
+        return '1.0'
     else:
         return grand_count[0]
 
@@ -9576,7 +9576,7 @@ def update_chat_info(cursor, chat_id, words_count, user_id, level_count):
                               bonus_count = bonus_count + ?
                           WHERE chat_id = ?''', (words_count, words_count * bonus_coefficient, chat_id))
         
-        print(f"Пополнение {chat_id}. Слов: {words_count}, Написал: {user_role}, Бонус коэф: {bonus_coefficient}, {grand_count}")
+        print(f"Пополнение {chat_id}. Слов: {words_count}, Написал: {user_role} ({user_id}), Бонус коэф: {bonus_coefficient}, {grand_count}")
     except Exception as e:
         error_message = (
             f"⚠️ Произошла ошибка при обновлении статистики чата:\n"
@@ -9779,7 +9779,7 @@ def add_chat_to_db(cursor, conn, chat_id, chat_name, creator_id, creator_usernam
         return False
 
     try:
-        cursor.execute("INSERT INTO chats VALUES (?, ?, ?, ?, ?, 0, 0, 0, 0, 0, 0, 0, 0, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO chats VALUES (?, ?, ?, ?, ?, 0, 0, 0, 0, 0, 0, 0, 0, ?, ?, ?, 1.0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                        (chat_id, chat_name, creator_id, creator_username, language, earn, hi_text, good_text, support, spam, fuck, flood, duration_spam1, duration_spam2, duration_spam3, duration_fuck1, duration_fuck2, duration_fuck3, duration_flood1, duration_flood2, duration_flood3, link, key, prefix))
         conn.commit()
         return True
