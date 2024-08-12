@@ -822,6 +822,39 @@ def close_command(message):
     else:
         bot.reply_to(message, "Недоступно для тебя")
 
+
+# Функция для создания подключения к базе данных SQLite
+def create_connection2():
+    conn = sqlite3.connect('chat_data.db')
+    return conn
+
+# Функция для обновления значений warn_count в таблицах chats и users
+def reset_warn_counts():
+    conn = create_connection2()
+    cursor = conn.cursor()
+    
+    # Обновление warn_count в таблице chats
+    cursor.execute("UPDATE chats SET warn_count = 0")
+    updated_chats = cursor.rowcount  # Получаем количество обновленных записей в таблице chats
+
+    # Обновление warn_count в таблице users
+    cursor.execute("UPDATE users SET warn_count = 0")
+    updated_users = cursor.rowcount  # Получаем количество обновленных записей в таблице users
+
+    conn.commit()
+    conn.close()
+
+    return updated_chats, updated_users
+
+# Обработчик команды /deletecount
+@bot.message_handler(commands=['deletecount'])
+def deletecount(message):
+    updated_chats, updated_users = reset_warn_counts()
+    
+    # Отправляем результат
+    result_message = f"Warn count has been reset for {updated_chats} chats and {updated_users} users."
+    bot.reply_to(message, result_message)
+
 # Обработчик команды /police
 @bot.message_handler(commands=['police'])
 def handle_police_command(message):
@@ -5798,44 +5831,7 @@ def help_command(message):
 
 #Команды ручной модерации конец
 
-@bot.message_handler(commands=['spam'])
-def spam(message):
-    chat_id = message.chat.id 
-    language = get_chat_language(chat_id)
-    if message.reply_to_message:  # Если команда вызвана в ответ на сообщение
-        replied_user_id = message.reply_to_message.from_user.id
-        try:
-            # Отмечаем пользователя и ограничиваем его возможность отправки сообщений на сутки
-            bot.restrict_chat_member(message.chat.id, replied_user_id, until_date=time.time() + 86400)
-            if language == "rus":
-                bot.reply_to(message, f"✅ Сообщение отправлено на рассмотрение!\n\nСообщение отмечено участником группы как СПАМ. В случае если данное сообщение является СПАМОМ, бонус Grand не будет начислен за активность\n\n🚫 Пользователь @{message.reply_to_message.from_user.username} ограничен в отправке сообщений до окончания проверки.")
-            else:
-                bot.reply_to(message, f"✅ Message sent for review!\n\nThis message has been marked as SPAM by a group member. If this message is SPAM, the Grand bonus will not be credited for the activity.\n\n🚫 User @{message.reply_to_message.from_user.username} is restricted from sending messages until verification is complete.")
-            
-            # Очищаем сообщение от смайликов, эмодзи, HTML-тегов, форматирования и лишних пробелов
-            cleaned_text = clean_message(message.reply_to_message.text)
-            
-            # Создаем клавиатуру с кнопками "записать" и "удалить"
-            keyboard = telebot.types.InlineKeyboardMarkup()
-            keyboard.row(InlineKeyboardButton("Удалить ❌", callback_data="delete"),
-                     InlineKeyboardButton("Записать ✅", callback_data="write"))
-            
-            # Отправляем очищенное сообщение в нужный чат с клавиатурой
-            bot.send_message(-1002007478754, cleaned_text, reply_markup=keyboard)
-            
-            # Удаляем сообщение, которое вызвало команду
-            bot.delete_message(message.chat.id, message.message_id)
-            bot.delete_message(message.chat.id, message.reply_to_message.message_id)
-        except Exception as e:
-            print(f"Error: {e}")
-            bot.reply_to(message, "⚠️ Я не могу отправить на проверку данное сообщение.\n\n⚠️ I am unable to submit this message for verification.")
-    else:  # Если команда вызвана без ответа
-        # Удаляем сообщение, которое вызвало команду
-        try:
-            bot.delete_message(message.chat.id, message.message_id)
-        except Exception as e:
-            print(f"Error: {e}")
-            bot.reply_to(message, "⚠️ Я не могу отправить на проверку данное сообщение.\n\n⚠️ I am unable to submit this message for verification.")
+
 
 # Функция для генерации случайного кода из 5 цифр
 def generate_code():
@@ -8948,45 +8944,6 @@ def get_user_mod(chat_id, user_id):
     conn.close()
     return user_mod
 
-def send_mod_notification(chat_id, user_id, duration_flood1, duration_flood2, duration_flood3):
-    user_mod = get_user_mod(chat_id, user_id)
-    chat_name, user_username = user_mod
-    try:
-
-        language = get_chat_language(chat_id)
-        text = data['notification_text'][language]['flood']
-        text1 = data['notification_text'][language]['mute']
-        text2 = data['notification_text'][language]['delete']
-        connection = connect_to_db('chat_data.db')
-        cursor = connection.cursor()
-        # Добавляем пользователя в базу данных, если его еще нет
-        user_if_not_exists(cursor, chat_id, chat_name, user_id, user_username)
-
-        duration = 3600  # Значение по умолчанию - 1 час
-        user_status = bot.get_chat_member(chat_id, user_id).status
-        if user_status not in ('creator', 'administrator'):
-            bot.restrict_chat_member(chat_id, user_id, until_date=time.time() + duration)
-        notification(user_username, chat_id, user_id, chat_name, language, text, text1, text2, duration_flood1, duration_flood2, duration_flood3)
-
-    except Exception as e:
-        error_message = (
-            f"⚠️ Произошла ошибка при выдачи предупреждения за матерные слова:\n"
-            f"• Тип ошибки: {e.__class__.__name__}\n"
-            f"• Описание: {e}\n"
-            f"• Строка: {e.__traceback__.tb_lineno}\n"
-            f"• User ID: {chat_id}\n"
-            f"• Username: @{user_username}\n"
-            f"• Время: {datetime.now()}"
-        )
-
-        # Используйте библиотеку logging для записи сообщения об ошибке
-        logging.error(error_message)
-        
-
-    finally:
-        # Закрываем соединение с базой данных
-        if 'connection' in locals():
-            connection.close()
 
 
 # Функция для сохранения сообщения в базе данных
@@ -9039,7 +8996,6 @@ def _mod_message_more(chat_id, message_id, user_id, message_text, duration_flood
                 cursor.execute("DELETE FROM last_messages WHERE chat_id = ? AND user_id = ?", (chat_id, user_id))
                 print("Duplicate messages deleted from database")
 
-                send_mod_notification(chat_id, user_id, duration_flood1, duration_flood2, duration_flood3)
                 print("Notification sent to moderators")
 
     conn.commit()
@@ -9145,13 +9101,6 @@ def handle_group_message(message):
     current_earn = get_group_earn(chat_id)
     current_good_text = get_group_good_text(chat_id)
     key = get_group_key(chat_id)
-    if key == "non":
-        pass
-    else:
-        words_list = [word.strip() for word in key.split(',')]
-        if is_similar_to_key(message_text, words_list):
-            bot.delete_message(chat_id, message.message_id)
-
     support_data = get_group_support(chat_id)
     support = support_data[0]  # Значение support
     spam = support_data[1]  # Значение spam
@@ -9167,11 +9116,6 @@ def handle_group_message(message):
     duration_flood2 = support_data[11] 
     duration_flood3 = support_data[12]
     link = support_data[13]
-    if flood == "on":
-        save_last_message(chat_id, message.message_id, user_id, message_text)
-        mod_message_more(chat_id, message.message_id, user_id, message_text, duration_flood1, duration_flood2, duration_flood3)
-    else:
-        pass
 
     save_message(chat_id, message.message_id)  # Сохранение идентификатора сообщения чата
     print(f"Received message: {message_text} from user {user_username} in chat {chat_name}")
@@ -9187,11 +9131,9 @@ def handle_group_message(message):
             if support == "off":
                 if is_similar_to_spam(message_text, spam_keywords):
                     if spam == "on":
-                        bot.delete_message(chat_id, message.message_id)
                         spam1 = data['notification_text'][language]['spam']
                         spam2 = data['notification_text'][language]['mute']
                         spam3 = data['notification_text'][language]['delete']
-                        notification(user_username, chat_id, user_id, chat_name, language, spam1, spam2, spam3, duration_spam1, duration_spam2, duration_spam3)
                     else:
                         pass
 
@@ -9202,23 +9144,12 @@ def handle_group_message(message):
                         bot.delete_message(chat_id, message.message_id)
                     else:
                         pass
-                # Проверяем, похоже ли сообщение на ругательство
-                elif contains_links(message_text):
-                    if link == "on":
-                        if user_status not in ('creator', 'administrator'):
-                            bot.delete_message(message.chat.id, message.message_id)
-                        else:
-                            pass
-                    else:
-                        pass
                 elif is_similar_to_fuck(message_text, fuck_keywords):
                     # Если чат имеет идентификатор -1001693817908
                     if fuck == "on":
-                        bot.delete_message(message.chat.id, message.message_id)
                         fuck1 = data['notification_text'][language]['fuck']
                         fuck2 = data['notification_text'][language]['mute']
                         fuck3 = data['notification_text'][language]['delete']
-                        notification(user_username, chat_id, user_id, chat_name, language, fuck1, fuck2, fuck3, duration_fuck1, duration_fuck2, duration_fuck3)
                     else:
                         pass
                         
